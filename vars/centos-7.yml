@@ -1,5 +1,5 @@
 ---
-# Copyright 2016, Logan Vig <logan2211@gmail.com>
+# Copyright 2019, Internet Solutions.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,20 +12,20 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 # can be bird or epel
-bird_package_source: bird
+
+bird_package_source: epel
 
 # bird configurations are stored in /etc on RHEL instead of /etc/bird
 bird_conf_dir: /etc
 
-bird_keys: https://copr-be.cloud.fedoraproject.org/results/logan2211/bird/pubkey.gpg
+bird_keys: ftp://bird.network.cz/pub/bird/centos/7/x86_64/RPM-GPG-KEY-network.cz
 
-bird_yum_repo_url: https://copr-be.cloud.fedoraproject.org/results/logan2211/bird/epel-7-$basearch/
+bird_yum_repo_url: ftp://repo.network.cz/pub/bird/centos/7/x86_64/
 bird_repo:
   state: present
   name: bird
-  description: COPR repository for BIRD packages on CentOS 7
+  description: BIRD packages on CentOS 7
   baseurl: "{{ bird_yum_repo_url }}"
   gpgkey: "{{ bird_keys }}"
 
