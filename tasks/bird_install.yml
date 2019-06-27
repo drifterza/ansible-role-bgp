@@ -1,5 +1,5 @@
 ---
-# Copyright 2016, Logan Vig <logan2211@gmail.com>
+# Copyright 2019, Internet Solutions.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -24,12 +24,6 @@
     - ansible_pkg_mgr == 'yum'
   tags:
     - install-yum
-
-- include_tasks: bird_install_zypper.yml
-  when:
-    - ansible_pkg_mgr == 'zypper'
-  tags:
-    - install-zypper
 
 - name: Install bird packages
   package:
