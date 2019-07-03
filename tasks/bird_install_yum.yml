@@ -13,10 +13,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+- name: Copy RPM key
+  copy:
+    src: RPM-GPG-KEY-NETWORK-CZ
+    dest: /etc/pki/rpm-gpg/RPM-GPG-KEY-NETWORK-CZ
+    owner: root
+    group: root
+    mode: '0644'
+
 - name: Add BIRD yum key
-  rpm_key:
-    state: present
-    key: "{{ bird_keys }}"
+  command: rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-NETWORK-CZ
+  args:
+    warn: no
   register: add_keys
   until: add_keys is success
   retries: 5
