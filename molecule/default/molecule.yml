@@ -10,7 +10,10 @@ lint:
 platforms:
   - name: instance
     image: "${docker_image:-quay.io/loganv/docker-ci}:${docker_image_tag:-centos-7}"
+    #image: "${docker_image:-quay.io/loganv/docker-ci}:${docker_image_tag:-ubuntu-bionic}"
     #image: "${docker_image:-quay.io/loganv/docker-ci}:${docker_image_tag:-ubuntu-xenial}"
+    #image: "${docker_image:-quay.io/loganv/docker-ci}:${docker_image_tag:-ubuntu-trusty}"
+    #image: "${docker_image:-quay.io/loganv/docker-ci}:${docker_image_tag:-debian-stretch}"
     # NOTE(logan): Uncomment user arg once upstream PR is released
     # https://github.com/metacloud/molecule/pull/1526
     # user: root

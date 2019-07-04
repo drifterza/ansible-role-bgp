@@ -57,7 +57,7 @@ pip install -r test-requirements.txt
 molecule create
 molecule converge
 ```
-This role currently uses centos7 as the molecule image. If you prefer you can change the `molecule/default/molecule.yaml` to test Ubuntu etc...
+This role currently uses CentOS7 as the molecule image. If you prefer you can change the `molecule/default/molecule.yaml` to test Ubuntu etc...
 
 ## Role Variables
 
@@ -91,7 +91,7 @@ This role currently uses centos7 as the molecule image. If you prefer you can ch
 
 ## Playbooks
 
-Example for CentOS using Bird 1.6.6
+Example for using Bird 1.6.x
 
     - hosts: servers
       roles:
