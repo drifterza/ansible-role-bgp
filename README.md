@@ -64,7 +64,7 @@ This role currently uses centos7 as the molecule image. If you prefer you can ch
 | variable | default | description |
 |--:|:-:|:--|
 | bird_conf_dir | `/etc/bird` | default configuration directory |
-| bird_router_id   | `127.0.0.1` | This is just a stub, please see the example to use the default IPv4 from ansible facts |
+| bird_router_id   | "{{ ansible_default_ipv4['address'] }}" | Default IPv4 from ansible facts |
 | bird_gather_net_facts | `true` | Force an update of the network facts before building the configuration. This is useful when protocol auto detection is used,because the network may have changed since facts were last gathered if they have been cached a while. |
 | bird_ipv4_enabled | `detect` | Auto-enable bird/bird6 if an ipv4/ipv6 default route is present (Set to true/false to override auto detection) |
 | bird_ipv6_enabled | `detect` | Auto-enable bird/bird6 if an ipv4/ipv6 default route is present (Set to true/false to override auto detection) | 
@@ -97,6 +97,4 @@ Example for CentOS using Bird 2.0.4
     - hosts: servers
       roles:
          - role: ansible-role-bgp
-           bird_packages: bird2
-           bird_package_source: bird
-           bird_router_id: "{{ ansible_default_ipv4['address'] }}"
+  
