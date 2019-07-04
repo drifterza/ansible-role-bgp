@@ -14,7 +14,7 @@
 # limitations under the License.
 # can be bird or epel
 
-bird_package_source: bird
+bird_package_source: epel
 
 # bird configurations are stored in /etc on RHEL instead of /etc/bird
 bird_conf_dir: /etc

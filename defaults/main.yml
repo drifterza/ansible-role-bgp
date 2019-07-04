@@ -32,7 +32,7 @@ bird_ipv6_enabled: detect
 bird_configs:
   - config_file: "{{ bird_conf_dir }}/bird.conf"
     enabled: "{{ bird_ipv4_enabled }}"
-    service: bird2
+    service: bird
     includes: "{{ bird_ipv4_includes }}"
     filters: "{{ bird_ipv4_filters }}"
     protocols: "{{ bird_ipv4_protocols }}"
@@ -55,8 +55,8 @@ bird_default_protocols:
   kernel: "{{ bird_protocols_kernel }}"
   device: "{{ bird_protocols_device }}"
 bird_protocols_kernel: |
-  ipv4 {
+  scan time 60;
   import none;
-  };
-bird_protocols_device: |
   
+bird_protocols_device: |
+  scan time 60;
