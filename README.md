@@ -87,12 +87,11 @@ This role currently uses centos7 as the molecule image. If you prefer you can ch
 | variable | default | description |
 |--:|:-:|:--|
 | bird_package_source | `epel` | default repository to fetch packages |
-| bird_packages | `bird` | This will install bird 1.6.6 as of this writing |
 | bird_ipv6_enabled | `skip` | RHEL uses a combined systemd unit for bird/bird6 called "bird" which manages both daemons. |
 
 ## Playbooks
 
-Example for CentOS using Bird 2.0.4
+Example for CentOS using Bird 1.6.6
 
     - hosts: servers
       roles:
