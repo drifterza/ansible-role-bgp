@@ -51,6 +51,10 @@ bird_ipv6_includes: []
 bird_ipv6_filters: {}
 bird_ipv6_protocols: "{{ bird_default_protocols }}"
 
+bird_as_number: "65000"
+bird_neighbor_address: "127.0.0.1"
+bird_bgp_description: "I am a Bird"
+
 bird_default_protocols:
   kernel: "{{ bird_protocols_kernel }}"
   device: "{{ bird_protocols_device }}"
@@ -64,9 +68,9 @@ bird_protocols_device: |
   scan time 60;
 
 bird_protocols_bgp: |
-  description "{{ ansible_default_ipv4['address'] }}";
-  local as 65000;
-  neighbor {{ ansible_default_ipv4['address'] }} as 65000;
+  description "{{ bird_bgp_description }}";
+  local as {{ bird_as_number }};
+  neighbor {{ bird_neighbor_address }} as {{ bird_as_number }};
   multihop;
   rr client;
   graceful restart;
