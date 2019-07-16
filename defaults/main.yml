@@ -54,6 +54,7 @@ bird_ipv6_protocols: "{{ bird_default_protocols }}"
 bird_default_protocols:
   kernel: "{{ bird_protocols_kernel }}"
   device: "{{ bird_protocols_device }}"
+  bgp: "{{ bird_protocols_bgp }}"
 
 bird_protocols_kernel: |
   scan time 60;
@@ -61,3 +62,14 @@ bird_protocols_kernel: |
   
 bird_protocols_device: |
   scan time 60;
+
+bird_protocols_bgp: |
+  description "{{ ansible_default_ipv4['address'] }}";
+  local as 65000;
+  neighbor {{ ansible_default_ipv4['address'] }} as 65000;
+  multihop;
+  rr client;
+  graceful restart;
+  import all;
+  export all;
+
