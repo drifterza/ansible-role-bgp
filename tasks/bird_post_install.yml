@@ -85,3 +85,45 @@
   tags:
     - upstart-init
     - bird-init
+
+- name: Disable inactive firewalld services and remove from bootup start
+  systemd: 
+    name: firewalld 
+    enabled: false
+    state: stopped
+  when:
+    - "not enable_firewalld | bool"
+  ignore_errors: "{{ ansible_check_mode | default(false) }}"
+  tags:
+    - upstart-init
+    - bird-init
+
+- name: Enable firewalld services and add to bootup start
+  systemd: 
+    name: firewalld 
+    enabled: true
+  when:
+    - "enable_firewalld | bool"
+  ignore_errors: "{{ ansible_check_mode | default(false) }}"
+  tags:
+    - upstart-init
+    - bird-init
+
+- name: Add BGP firewall rules
+  firewalld:
+    source: "{{ bird_cidr }}"
+    port: 179/tcp
+    permanent: true
+    state: enabled
+
+- name: Start active firewalld services and add to bootup start
+  service:
+    name: firewalld
+    enabled: true
+    state: started
+  when:
+    - "enable_firewalld | bool"
+  ignore_errors: "{{ ansible_check_mode | default(false) }}"
+  tags:
+    - upstart-init
+    - bird-init

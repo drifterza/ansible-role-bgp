@@ -3,15 +3,6 @@
   hosts: all
   roles:
     - role: "{{ playbook_dir | dirname | dirname | basename }}"
-      bird_protocols_bgp: |
-        description "{{ ansible_default_ipv4['address'] }}";
-        local as {{ bird_as_number }};
-        neighbor {{ bird_neighbor_address }} as {{ bird_as_number }};
-        multihop;
-        rr client;
-        graceful restart;
-        import all;
-        export all;
   post_tasks:
     - name: Check bird is running
       command: pgrep -a bird

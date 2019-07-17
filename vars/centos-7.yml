@@ -14,6 +14,7 @@
 # limitations under the License.
 # can be bird or epel
 
+enable_firewalld: false
 bird_package_source: epel
 
 # bird configurations are stored in /etc on RHEL instead of /etc/bird
@@ -33,6 +34,7 @@ bird_required_packages:
 
 bird_packages: 
   - bird
+  - firewalld
 
 # RHEL uses a combined systemd unit for bird/bird6 called "bird" which manages
 # both daemons.

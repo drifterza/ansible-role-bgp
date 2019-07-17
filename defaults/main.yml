@@ -51,8 +51,10 @@ bird_ipv6_includes: []
 bird_ipv6_filters: {}
 bird_ipv6_protocols: "{{ bird_default_protocols }}"
 
-bird_as_number: "65000"
+bird_local_as: "65000"
 bird_neighbor_address: "127.0.0.1"
+bird_cidr: 127.0.0.0/20
+bird_neighbor_as: "65000"
 bird_bgp_description: "I am a Bird"
 
 bird_default_protocols:
@@ -61,16 +63,18 @@ bird_default_protocols:
   bgp: "{{ bird_protocols_bgp }}"
 
 bird_protocols_kernel: |
-  scan time 60;
-  import none;
+  persist;
+  scan time 20;
+  import all;
+  export all;
   
 bird_protocols_device: |
-  scan time 60;
+  scan time 10;
 
 bird_protocols_bgp: |
   description "{{ bird_bgp_description }}";
-  local as {{ bird_as_number }};
-  neighbor {{ bird_neighbor_address }} as {{ bird_as_number }};
+  local as {{ bird_local_as }};
+  neighbor {{ bird_neighbor_address }} as {{ bird_neighbor_as }};
   multihop;
   rr client;
   graceful restart;

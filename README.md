@@ -67,7 +67,13 @@ This role currently uses CentOS7 as the molecule image. If you prefer you can ch
 | bird_router_id   | `{{ ansible_default_ipv4['address'] }}` | Default IPv4 from ansible facts |
 | bird_gather_net_facts | `true` | Force an update of the network facts before building the configuration. This is useful when protocol auto detection is used,because the network may have changed since facts were last gathered if they have been cached a while. |
 | bird_ipv4_enabled | `detect` | Auto-enable bird/bird6 if an ipv4/ipv6 default route is present (Set to true/false to override auto detection) |
-| bird_ipv6_enabled | `detect` | Auto-enable bird/bird6 if an ipv4/ipv6 default route is present (Set to true/false to override auto detection) | 
+| bird_ipv6_enabled | `detect` | Auto-enable bird/bird6 if an ipv4/ipv6 default route is present (Set to true/false to override auto detection) |
+| bird_local_as | `65000` | Default private Autonumous number |
+| bird_neighbor_address | `127.0.0.1` | Default BGP Peer address |
+| bird_cidr | `127.0.0.0/20` | Default CIDR to use with FirewallD |
+| bird_neighbor_as | `65000` | Default Peer Autonumous number |
+| bird_bgp_description | `I am a Bird` | Description of the BGP session |
+| enable_firewalld | `false` | By default FirewallD is not enabled | 
 
 
 ### Debian-only
@@ -96,4 +102,15 @@ Example for using Bird 1.6.x
     - hosts: servers
       roles:
          - role: ansible-role-bgp
+           bird_cidr: 172.20.48.0/20
+           enable_firewalld: true         
+           bird_protocols_bgp: |
+             description "{{ ansible_default_ipv4['address'] }}";
+             local as {{ bird_local_as }};
+             neighbor {{ bird_neighbor_address }} as {{ bird_neighbor_as }};
+             multihop;
+             rr client;
+             graceful restart;
+             import all;
+             export all;
   
