@@ -29,6 +29,8 @@ bird_gather_net_facts: true
 bird_ipv4_enabled: detect
 bird_ipv6_enabled: detect
 
+bird_syslog_location: "/var/log/bird.log"
+
 bird_configs:
   - config_file: "{{ bird_conf_dir }}/bird.conf"
     enabled: "{{ bird_ipv4_enabled }}"
@@ -62,22 +64,22 @@ bird_default_protocols:
   device: "{{ bird_protocols_device }}"
   bgp: "{{ bird_protocols_bgp }}"
 
-bird_protocols_kernel: |
-  persist;
-  scan time 20;
-  import all;
-  export all;
-  
 bird_protocols_device: |
   scan time 10;
 
-bird_protocols_bgp: |
-  description "{{ bird_bgp_description }}";
-  local as {{ bird_local_as }};
-  neighbor {{ bird_neighbor_address }} as {{ bird_neighbor_as }};
-  multihop;
-  rr client;
-  graceful restart;
+bird_protocols_kernel: |
+  learn;
+  persist;
+  scan time 10;
   import all;
   export all;
 
+bird_protocols_bgp: |
+  description "{{ ansible_default_ipv4['address'] }}";
+  local as {{ bird_local_as }};
+  neighbor {{ bird_neighbor_address }} as {{ bird_neighbor_as }};
+  multihop;
+  graceful restart;
+  import all;
+  export all;
+  source address "{{ ansible_default_ipv4['address'] }}";

@@ -34,6 +34,15 @@
     - bird-config
     - bird-init
 
+- name: Ensure log file exists and is owned correctly
+  file:
+    path: "{{ bird_syslog_location }}"
+    owner: bird
+    group: bird
+    mode: '0664'
+  tags:
+    - bird-config
+
 - name: Drop bird configuration files
   template:
     src: bird-common.conf.j2
@@ -127,3 +136,8 @@
   tags:
     - upstart-init
     - bird-init
+
+- name: Reload firewalld as a last check
+  command: /bin/firewall-cmd --reload
+  become: yes
+    

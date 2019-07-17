@@ -1,5 +1,8 @@
 # {{ ansible_managed }}
 
+log "{{ bird_syslog_location }}" all;
+log syslog all;
+
 router id {{ bird_router_id }};
 
 {% for include in item.includes %}
