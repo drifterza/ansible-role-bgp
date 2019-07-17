@@ -82,4 +82,4 @@ bird_protocols_bgp: |
   graceful restart;
   import all;
   export all;
-  source address "{{ ansible_default_ipv4['address'] }}";
+  source address {{ ansible_default_ipv4['address'] }};
