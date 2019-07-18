@@ -46,9 +46,10 @@ bird_configs:
     protocols: "{{ bird_ipv6_protocols }}"
 
 bird_ipv4_includes: []
-bird_ipv4_filters: {}
+bird_ipv4_filters: { 
+  default_gw_filter: 'if  net = 0.0.0.0/0 then reject;' 
+}
 bird_ipv4_protocols: "{{ bird_default_protocols }}"
-
 bird_ipv6_includes: []
 bird_ipv6_filters: {}
 bird_ipv6_protocols: "{{ bird_default_protocols }}"
@@ -58,28 +59,31 @@ bird_neighbor_address: "127.0.0.1"
 bird_cidr: 127.0.0.0/20
 bird_neighbor_as: "65000"
 bird_bgp_description: "I am a Bird"
+bird_protocols_direct_device: "eth*"
 
 bird_default_protocols:
   kernel: "{{ bird_protocols_kernel }}"
+  direct: "{{ bird_protocols_direct }}"
   device: "{{ bird_protocols_device }}"
   bgp: "{{ bird_protocols_bgp }}"
+
+bird_protocols_direct: |
+  interface "{{ bird_protocols_direct_device }}";
 
 bird_protocols_device: |
   scan time 10;
 
 bird_protocols_kernel: |
+  scan time 2;
   learn;
-  persist;
-  scan time 10;
-  import all;
+  device routes;
   export all;
+  import filter default_gw_filter;
 
 bird_protocols_bgp: |
-  description "{{ ansible_default_ipv4['address'] }}";
+  description "{{ bird_bgp_description }}";
   local as {{ bird_local_as }};
   neighbor {{ bird_neighbor_address }} as {{ bird_neighbor_as }};
   multihop;
   graceful restart;
-  import all;
   export all;
-  source address {{ ansible_default_ipv4['address'] }};

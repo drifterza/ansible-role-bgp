@@ -141,4 +141,6 @@
 - name: Reload firewalld as a last check
   command: /bin/firewall-cmd --reload
   become: yes
+  when:
+    - "enable_firewalld | bool"
     
