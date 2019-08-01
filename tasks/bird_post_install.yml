@@ -84,9 +84,9 @@
     - upstart-init
     - bird-init
 
-- name: Restart bird services
+- name: Restart bird services after includes
   service:
-    name: "{{ item.item.service }}"
+    name: "bird"
     state: restarted
   when: "item is changed"
   ignore_errors: "{{ ansible_check_mode | default(false) }}"
