@@ -84,6 +84,17 @@
     - upstart-init
     - bird-init
 
+- name: Restart bird services
+  service:
+    name: "{{ item.item.service }}"
+    state: restarted
+  when: "item is changed"
+  ignore_errors: "{{ ansible_check_mode | default(false) }}"
+  loop: "{{ bird_results_includes.results }}"
+  tags:
+    - upstart-init
+    - bird-init    
+
 - name: Disable inactive BIRD BGP services and remove from bootup start
   service:
     name: "{{ item.service }}"
