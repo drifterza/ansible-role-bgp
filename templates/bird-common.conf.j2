@@ -9,11 +9,6 @@ router id {{ bird_router_id }};
 include "{{ include }}";
 {% endfor -%}
 
-{% for name, filter in item.filters.items() %}
-filter {{ name }} {
-  {{ filter | indent(2) -}}
-}
-{% endfor -%}
 
 {% for proto_type, protos in item.protocols.items() %}
 {% if protos is string %}
@@ -25,6 +20,7 @@ protocol {{ proto_type }} {
 protocol {{ proto_type }} {{ proto_name }} {
   {{ proto_attrs | indent(2) -}}
 }
+
 {% endfor %}
 {% endif %}
 {% endfor %}

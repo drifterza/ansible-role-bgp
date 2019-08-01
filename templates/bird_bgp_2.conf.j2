@@ -1,0 +1,8 @@
+protocol bgp {
+  description "{{ bird_bgp_description_2 }}";
+  local as {{ bird_local_as_2 }};
+  neighbor {{ bird_neighbor_address_2 }} as {{ bird_neighbor_as_2 }};
+  multihop;
+  graceful restart;
+  export all;
+}

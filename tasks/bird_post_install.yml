@@ -57,6 +57,22 @@
   tags:
     - bird-config
 
+- name: Drop include configuration files
+  template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    owner: "root"
+    group: "root"
+    mode: "0644"
+  register: bird_results_includes
+  loop: 
+    - { src: 'bird_bgp_1.conf.j2', dest: '/etc/bird_bgp_1.conf' }
+    - { src: 'bird_bgp_2.conf.j2', dest: '/etc/bird_bgp_2.conf' }
+    - { src: 'ipv4_filters.conf.j2', dest: '/etc/ipv4_filters.conf' }
+    - { src: 'ipv4_static.conf.j2', dest: '/etc/ipv4_static.conf' }
+  tags:
+    - bird-config
+
 - name: Restart bird services
   service:
     name: "{{ item.item.service }}"
@@ -121,10 +137,13 @@
 
 - name: Add BGP firewall rules
   firewalld:
-    source: "{{ bird_cidr }}"
+    source: "{{ item }}"
     port: 179/tcp
     permanent: true
     state: enabled
+  with_items:
+    - "{{ bird_cidr_1 }}"
+    - "{{ bird_cidr_2 }}"
 
 - name: Start active firewalld services and add to bootup start
   service:
