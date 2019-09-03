@@ -1,6 +1,6 @@
 # {{ ansible_managed }}
 
-{% for ipaddress, subnet, route in bgp_static_configs %}
+{% for ipaddress, subnet, route in bgp_static_configs.iteritems() %}
 protocol static static_bgp {
   route {{ ipaddress | indent(2) -}}:{{ subnet | indent(2) -}} via {{ route | indent(2) -}}
 }
