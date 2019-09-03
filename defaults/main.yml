@@ -72,8 +72,9 @@ bird_protocols_kernel: |
   export all;
   import filter default_gw_filter;
 
-bgp_ipaddress: "127.0.0.1"
-bgp_subnet: "255.255.255.0"
-bgp_static_route: "127.0.0.1"
-  
+routes:
+  127.0.0.0:
+    ipaddress: 127.0.0.0
+    subnet: 255.0.0.0
+    gateway: 127.0.0.1
   

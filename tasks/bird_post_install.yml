@@ -56,6 +56,18 @@
   loop: "{{ bird_configs }}"
   tags:
     - bird-config
+    
+- name: Drop bird bgp static routes
+  template:
+    src: bgp-static.conf.j2
+    dest: "/etc/bgp-static.conf"
+    owner: "root"
+    group: "root"
+    mode: "0644"
+  register: bird_results_static
+  loop: "{{ query('dict', routes) }}"
+  tags:
+    - bird-config
 
 - name: Drop include configuration files
   template:
@@ -72,23 +84,6 @@
   tags:
     - bird-config
 
-- name: Drop bird bgp static routes
-  template:
-    src: bgp-static.conf.j2
-    dest: "/etc/bgp-static.conf"
-    owner: "root"
-    group: "root"
-    mode: "0644"
-  register: bird_results_static
-  loop: "{{ query('dict', routes) }}"
-  tags:
-    - bird-config
-
-- name: Routes
-  debug:
-    msg: "Route {{ item.key }} has subnet {{ item.value.subnet }} and gateway {{ item.value.gateway }}"
-  loop: "{{ query('dict', routes) }}"
-  
 - name: Restart bird services
   service:
     name: "{{ item.item.service }}"

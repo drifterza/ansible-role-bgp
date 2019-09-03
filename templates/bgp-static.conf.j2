@@ -1,8 +1,7 @@
 # {{ ansible_managed }}
 
-{% for item in routes.values() %}
 protocol static static_bgp {
+{% for item in routes.values() %}
   route {{ item.ipaddress | indent(2) -}}:{{ item.subnet | indent(2) }} via {{ item.gateway | indent(2) -}};
-}
 {% endfor -%}
-
+}
