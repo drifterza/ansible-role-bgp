@@ -17,7 +17,7 @@ bird_package_state: latest
 
 bird_conf_dir: /etc/bird
 
-bird_router_id: "{{ ansible_default_ipv4['address'] }}" 
+bgp_router_id: "{{ ansible_default_ipv4['address'] }}" 
 
 # Force an update of the network facts before building the configuration
 # This is useful when protocol auto detection is used, because the network may
@@ -44,32 +44,22 @@ bird_configs:
     protocols: "{{ bird_ipv6_protocols }}"
 
 bird_ipv4_includes: 
-  - bird_bgp_1.conf
-  - bird_bgp_2.conf
-  - ipv4_filters.conf
-  - ipv4_static.conf
+  - bird-bgp.conf
+  - ipv4-filters.conf
+  - bgp-static.conf
+
 
 bird_ipv4_protocols: "{{ bird_default_protocols }}"
 bird_ipv6_includes: []
 bird_ipv6_filters: {}
 bird_ipv6_protocols: "{{ bird_default_protocols }}"
 
-bird_local_as_1: "65000"
-bird_neighbor_address_1: "127.0.0.1"
-bird_cidr_1: "127.0.0.0/20"
-bird_neighbor_as_1: "65000"
-bird_bgp_description_1: "I am a Bird"
-bird_static_gateway_1: '"eth0"' # Needs to be a quoted string
-bird_static_gateway_2: "127.0.0.1" #Needs to be none quoted string
+bgp_local_asn: "65000"
+bgp_neighbor_address: "127.0.0.1"
 
-bird_local_as_2: "65002"
-bird_neighbor_address_2: "127.0.0.1"
-bird_cidr_2: "127.0.0.0/20"
-bird_neighbor_as_2: "65000"
-bird_bgp_description_2: "I am a Bird number 2"
-
+bgp_neighbor_asn: "65000"
+bgp_description: "I am a Bird"
 bird_protocols_direct_device: "eth*"
-
 bird_default_protocols:
   kernel: "{{ bird_protocols_kernel }}"
   device: "{{ bird_protocols_device }}"
@@ -78,8 +68,20 @@ bird_protocols_device: |
   scan time 10;
 
 bird_protocols_kernel: |
-  scan time 2;
-  learn;
-  device routes;
+  scan time 20;
+  persist;
   export all;
   import filter default_gw_filter;
+
+bgp_ipaddress: "127.0.0.1"
+bgp_subnet: "255.255.255.0"
+bgp_static_route: "127.0.0.1"
+
+bgp_static_configs:
+  - confg_file: "{{ bird_conf_dir }}/bgp-static.conf"
+    ipaddress: "{{ bgp_ipaddress }}"
+    subnet: "{{ bgp_subnet }}"
+    route: "{{ bgp_static_route }}"
+    enabled: "{{ bird_ipv4_enabled }}"
+  
+  

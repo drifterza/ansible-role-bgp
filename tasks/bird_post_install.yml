@@ -66,10 +66,22 @@
     mode: "0644"
   register: bird_results_includes
   loop: 
-    - { src: 'bird_bgp_1.conf.j2', dest: '/etc/bird_bgp_1.conf' }
-    - { src: 'bird_bgp_2.conf.j2', dest: '/etc/bird_bgp_2.conf' }
-    - { src: 'ipv4_filters.conf.j2', dest: '/etc/ipv4_filters.conf' }
-    - { src: 'ipv4_static.conf.j2', dest: '/etc/ipv4_static.conf' }
+    - { src: 'bird-bgp.conf.j2', dest: '/etc/bird-bgp.conf' }
+    - { src: 'ipv4-filters.conf.j2', dest: '/etc/ipv4-filters.conf' }
+    - { src: 'bgp-static.conf.j2', dest: '/etc/bgp-static.conf' }
+  tags:
+    - bird-config
+
+- name: Drop bird bgp static routes
+  template:
+    src: bgp-static.conf.j2
+    dest: "{{ item.config_file }}"
+    owner: "root"
+    group: "root"
+    mode: "0644"
+  register: bird_results_static
+  when: "item.enabled | bool"
+  loop: "{{ bgp_static_configs }}"
   tags:
     - bird-config
 
@@ -93,7 +105,18 @@
   loop: "{{ bird_results_includes.results }}"
   tags:
     - upstart-init
-    - bird-init    
+    - bird-init
+
+- name: Restart bird services after static routes
+  service:
+    name: "bird"
+    state: restarted
+  when: "item is changed"
+  ignore_errors: "{{ ansible_check_mode | default(false) }}"
+  loop: "{{ bird_results_static.results }}"
+  tags:
+    - upstart-init
+    - bird-init  
 
 - name: Disable inactive BIRD BGP services and remove from bootup start
   service:
@@ -146,15 +169,15 @@
     - upstart-init
     - bird-init
 
-- name: Add BGP firewall rules
-  firewalld:
-    source: "{{ item }}"
-    port: 179/tcp
-    permanent: true
-    state: enabled
-  with_items:
-    - "{{ bird_cidr_1 }}"
-    - "{{ bird_cidr_2 }}"
+# - name: Add BGP firewall rules
+#   firewalld:
+#     source: "{{ item }}"
+#     port: 179/tcp
+#     permanent: true
+#     state: enabled
+#   with_items:
+#     - "{{ bird_cidr_1 }}"
+#     - "{{ bird_cidr_2 }}"
 
 - name: Start active firewalld services and add to bootup start
   service:

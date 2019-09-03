@@ -1,0 +1,8 @@
+protocol bgp {
+  description "{{ bgp_description }}";
+  local as {{ bgp_local_asn }};
+  neighbor {{ bgp_neighbor_address }} as {{ bgp_neighbor_asn }};
+  import all;
+  graceful restart;
+  export where proto = "static_bgp";
+}
