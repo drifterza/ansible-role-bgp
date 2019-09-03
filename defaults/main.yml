@@ -55,8 +55,7 @@ bird_ipv6_filters: {}
 bird_ipv6_protocols: "{{ bird_default_protocols }}"
 
 bgp_local_asn: "65000"
-bgp_neighbor_address: "127.0.0.1"
-
+bgp_neighbor_ipaddress: "127.0.0.1"
 bgp_neighbor_asn: "65000"
 bgp_description: "I am a Bird"
 bird_protocols_direct_device: "eth*"
@@ -76,12 +75,5 @@ bird_protocols_kernel: |
 bgp_ipaddress: "127.0.0.1"
 bgp_subnet: "255.255.255.0"
 bgp_static_route: "127.0.0.1"
-
-bgp_static_configs:
-  - confg_file: "{{ bird_conf_dir }}/bgp-static.conf"
-    ipaddress: "{{ bgp_ipaddress }}"
-    subnet: "{{ bgp_subnet }}"
-    route: "{{ bgp_static_route }}"
-    enabled: "{{ bird_ipv4_enabled }}"
   
   

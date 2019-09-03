@@ -3,18 +3,16 @@
   hosts: all
   roles:
     - role: "{{ playbook_dir | dirname | dirname | basename }}"
-      bird_bgp_description_1: "Testing 1"
-      bird_local_as_1: "65000"
-      bird_cidr_1: "172.20.32.0/24"
-      bird_neighbor_address_1: "172.20.32.1"
-      bird_neighbor_as_1: "65001"
-      bird_static_gateway_1: '"eth0"'
-      bird_bgp_description_2: "Testing 2"
-      bird_local_as_2: "65002"
-      bird_cidr_2: "172.20.40.0/21"
-      bird_neighbor_address_2: "172.20.40.1"
-      bird_neighbor_as_2: "65001"
-      bird_static_gateway_2: "127.0.0.1"
+  vars:
+    routes:
+      172.20.33.0:
+        ipaddress: 172.20.33.0
+        subnet: 255.255.255.0
+        gateway: 172.20.32.1
+      172.20.34.0:
+        ipaddress: 172.20.34.0
+        subnet: 255.255.255.0
+        gateway: 172.20.32.1  
   post_tasks:
     - name: Check bird is running
       command: pgrep -a bird
