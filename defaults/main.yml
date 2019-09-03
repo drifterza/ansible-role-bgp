@@ -59,8 +59,8 @@ bird_neighbor_address_1: "127.0.0.1"
 bird_cidr_1: "127.0.0.0/20"
 bird_neighbor_as_1: "65000"
 bird_bgp_description_1: "I am a Bird"
-bird_static_gateway_1: []
-bird_static_gateway_2: []
+bird_static_gateway_1: '"eth0"' # Needs to be a quoted string
+bird_static_gateway_2: "127.0.0.1" #Needs to be none quoted string
 
 bird_local_as_2: "65002"
 bird_neighbor_address_2: "127.0.0.1"
