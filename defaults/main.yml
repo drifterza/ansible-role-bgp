@@ -55,6 +55,7 @@ bird_ipv6_filters: {}
 bird_ipv6_protocols: "{{ bird_default_protocols }}"
 
 bgp_local_asn: "65000"
+bgp_local_cidr: "127.0.0.1"
 bgp_neighbor_ipaddress: "127.0.0.1"
 bgp_neighbor_asn: "65000"
 bgp_description: "I am a Bird"

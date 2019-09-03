@@ -168,15 +168,14 @@
     - upstart-init
     - bird-init
 
-# - name: Add BGP firewall rules
-#   firewalld:
-#     source: "{{ item }}"
-#     port: 179/tcp
-#     permanent: true
-#     state: enabled
-#   with_items:
-#     - "{{ bird_cidr_1 }}"
-#     - "{{ bird_cidr_2 }}"
+- name: Add BGP firewall rules
+  firewalld:
+    source: "{{ item }}"
+    port: 179/tcp
+    permanent: true
+    state: enabled
+  with_items:
+    - "{{ bgp_local_cidr }}"
 
 - name: Start active firewalld services and add to bootup start
   service:
