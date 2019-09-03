@@ -1,10 +1,6 @@
 # {{ ansible_managed }}
 
-<<<<<<< HEAD
 {% for item in routes.values() %}
-=======
-{% for ipaddress, subnet, route in bgp_static_configs.items() %}
->>>>>>> eaea5cbc55d798851a70235154476931265c79ad
 protocol static static_bgp {
   route {{ item.ipaddress | indent(2) -}}:{{ item.subnet | indent(2) }} via {{ item.gateway | indent(2) -}};
 }
