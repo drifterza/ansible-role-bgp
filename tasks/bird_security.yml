@@ -1,0 +1,170 @@
+---
+# Copyright 2019, Internet Solutions.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+- name: Set ip forwarding on in /proc and in the sysctl file and reload if necessary 
+  sysctl:
+    name: net.ipv4.ip_forward
+    value: "1"
+    sysctl_set: yes
+    state: present
+    reload: yes
+  ignore_errors: "{{ ansible_check_mode | default(false) }}"
+
+- name: Controls the System Request debugging functionality of the kernel
+  sysctl:
+    name: kernel.sysrq
+    value: "0"
+    sysctl_set: yes
+    state: present
+    reload: yes
+  ignore_errors: "{{ ansible_check_mode | default(false) }}"
+ 
+- name: Controls whether core dumps will append the PID to the core filename
+  sysctl:
+    name: kernel.core_uses_pid
+    value: "1"
+    sysctl_set: yes
+    state: present
+    reload: yes
+  ignore_errors: "{{ ansible_check_mode | default(false) }}"
+ 
+- name:  Turn on SYN-flood protections (1)
+  sysctl:
+    name: net.ipv4.tcp_syncookies
+    value: "1"
+    sysctl_set: yes
+    state: present
+    reload: yes
+  ignore_errors: "{{ ansible_check_mode | default(false) }}"
+
+- name:  Turn on SYN-flood protections (2)
+  sysctl:
+    name: net.ipv4.tcp_synack_retries
+    value: "5"
+    sysctl_set: yes
+    state: present
+    reload: yes
+  ignore_errors: "{{ ansible_check_mode | default(false) }}"
+ 
+- name: Log packets with impossible addresses to kernel log
+  sysctl:
+    name: net.ipv4.conf.all.log_martians
+    value: "1"
+    sysctl_set: yes
+    state: present
+    reload: yes
+  ignore_errors: "{{ ansible_check_mode | default(false) }}"
+
+- name: Ignore all ICMP ECHO and TIMESTAMP requests sent to it via broadcast/multicast
+  sysctl:
+    name: net.ipv4.icmp_echo_ignore_broadcasts
+    value: "1"
+    sysctl_set: yes
+    state: present
+    reload: yes
+  ignore_errors: "{{ ansible_check_mode | default(false) }}"
+
+- name: Prevent against the common 'syn flood attack'
+  sysctl:
+    name: net.ipv4.tcp_syncookies
+    value: "1"
+    sysctl_set: yes
+    state: present
+    reload: yes
+  ignore_errors: "{{ ansible_check_mode | default(false) }}"
+ 
+- name:  Enable source validation by reversed path, as specified in RFC1812
+  sysctl:
+    name: net.ipv4.conf.all.rp_filter
+    value: "1"
+    sysctl_set: yes
+    state: present
+    reload: yes
+  ignore_errors: "{{ ansible_check_mode | default(false) }}"
+ 
+- name: Controls source route verification
+  sysctl:
+    name: net.ipv4.conf.default.rp_filter
+    value: "1"
+    sysctl_set: yes
+    state: present
+    reload: yes
+  ignore_errors: "{{ ansible_check_mode | default(false) }}"
+
+- name: TCP and memory optimization (1)
+  sysctl:
+    name: net.ipv4.tcp_rmem
+    value: 4096 87380 8388608
+    sysctl_set: yes
+    state: present
+    reload: yes
+  ignore_errors: "{{ ansible_check_mode | default(false) }}"
+
+- name: TCP and memory optimization (2)
+  sysctl:
+    name: net.ipv4.tcp_wmem
+    value: 4096 87380 8388608
+    sysctl_set: yes
+    state: present
+    reload: yes
+  ignore_errors: "{{ ansible_check_mode | default(false) }}"
+ 
+- name: increase Linux auto tuning TCP buffer limits
+  sysctl:
+    name: net.ipv4.tcp_window_scaling
+    value: "1"
+    sysctl_set: yes
+    state: present
+    reload: yes
+  ignore_errors: "{{ ansible_check_mode | default(false) }}"
+ 
+- name: increase system file descriptor limit
+  sysctl:
+    name: fs.file-max
+    value: "65535"
+    sysctl_set: yes
+    state: present
+    reload: yes
+  ignore_errors: "{{ ansible_check_mode | default(false) }}"
+
+- name: Allow for more PIDs
+  sysctl:
+    name: kernel.pid_max
+    value: "65536"
+    sysctl_set: yes
+    state: present
+    reload: yes
+  ignore_errors: "{{ ansible_check_mode | default(false) }}"
+ 
+- name: Increase system IP port limits
+  sysctl:
+    name: net.ipv4.ip_local_port_range
+    value: 2000 65000
+    sysctl_set: yes
+    state: present
+    reload: yes
+  ignore_errors: "{{ ansible_check_mode | default(false) }}"
+
+- name: RFC 1337 fix
+  sysctl:
+    name: net.ipv4.tcp_rfc1337
+    value: "1"
+    sysctl_set: yes
+    state: present
+    reload: yes
+  ignore_errors: "{{ ansible_check_mode | default(false) }}"
+
+- name: Execute sysctl -p as a final step.
+  command: sysctl -p

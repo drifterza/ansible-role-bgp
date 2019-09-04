@@ -189,6 +189,8 @@
     - upstart-init
     - bird-init
 
+- include_tasks: bird_security.yml
+
 - name: Reload firewalld as a last check
   command: /bin/firewall-cmd --reload
   become: yes
