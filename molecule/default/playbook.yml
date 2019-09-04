@@ -3,7 +3,7 @@
   hosts: all
   roles:
     - role: "{{ playbook_dir | dirname | dirname | basename }}"
-
+      bird_protocols_direct_device: eth0
   post_tasks:
     - name: Check bird is running
       command: pgrep -a bird

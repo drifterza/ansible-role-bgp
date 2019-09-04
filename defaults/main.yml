@@ -59,6 +59,7 @@ bgp_local_cidr: "127.0.0.1"
 bgp_neighbor_ipaddress: "127.0.0.1"
 bgp_neighbor_asn: "65000"
 bgp_description: "I am a Bird"
+bgp_friendly_name: "bird"
 bird_protocols_direct_device: "eth*"
 bird_default_protocols:
   kernel: "{{ bird_protocols_kernel }}"
