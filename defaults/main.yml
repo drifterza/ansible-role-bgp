@@ -44,10 +44,11 @@ bird_configs:
     protocols: "{{ bird_ipv6_protocols }}"
 
 bird_ipv4_includes: 
-  - bird-bgp.conf
-  - ipv4-filters.conf
-  - bgp-static.conf
-
+  - bird.rr.bgp.template
+  - bird.rs.bgp.template
+  - bird.bgp.static
+  - bird.bgp.clients
+  - ipv4.filters
 
 bird_ipv4_protocols: "{{ bird_default_protocols }}"
 bird_ipv6_includes: []
@@ -59,7 +60,7 @@ bgp_local_cidr: "127.0.0.1"
 bgp_neighbor_ipaddress: "127.0.0.1"
 bgp_neighbor_asn: "65000"
 bgp_description: "I am a Bird"
-bgp_friendly_name: "bird"
+bgp_friendly_name: "bird"  # Ensure the friendly name uses lowercase and underscores to create long names #
 bird_protocols_direct_device: "eth*"
 bird_default_protocols:
   kernel: "{{ bird_protocols_kernel }}"
@@ -79,4 +80,17 @@ routes:
     ipaddress: 127.0.0.0
     subnet: 255.0.0.0
     gateway: 127.0.0.1
+
+rr:
+  127.0.0.0:
+    bgp_friendly_name: "bird_900d_rr"
+    bgp_neighbor_ipaddress: 127.0.0.1 # Only internal neighbor can be RR client #
+    bgp_neighbor_asn: "65000" # ASN needs to be the same ASN as the peer to act as a RR client#
+    bgp_cluster_id: "1.0.0.1" # Needed to peer with Calico
+
+rs:
+  127.0.0.0:
+    bgp_friendly_name: "bird_900d_rs"
+    bgp_neighbor_ipaddress: 8.8.8.8 # Only external neighbor can be RS client #
+    bgp_neighbor_asn: "65001" # ASN needs to be the PEERS ASN#
   

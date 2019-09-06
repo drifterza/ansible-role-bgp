@@ -4,6 +4,28 @@ log "{{ bird_syslog_location }}" all;
 log syslog all;
 
 router id {{ bgp_router_id }};
+define myas = {{ bgp_local_asn }};
+define peeras = {{ bgp_neighbor_asn }};
+
+debug protocols all;
+
+function avoid_martians()
+prefix set martians;
+{
+  martians = [ 169.254.0.0/16+, 192.168.0.0/16+, 10.0.0.0/8+,
+  224.0.0.0/4+, 240.0.0.0/4+, 0.0.0.0/32-, 0.0.0.0/0{25,32}, 0.0.0.0/0{0,7} ];
+
+### Avoid RFC1918 and similar networks
+if net ~ martians then return false;
+  return true;
+}
+
+function avoid_crappy_prefixes()
+{
+  if net.len < 8 then return false;
+  if net.len > 24 then return false;
+  return true;
+}
 
 {% for include in item.includes %}
 include "{{ include }}";

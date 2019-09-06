@@ -1,0 +1,36 @@
+# {{ ansible_managed }}
+
+### Generic Input Filter
+
+filter bgp_in {
+ if avoid_martians() && avoid_crappy_prefixes() then accept;
+ else reject;
+}
+
+### BGP output filter (based on communities)
+
+function bgp_out(int peeras)
+{
+ if ! (source = RTS_BGP ) then return false;
+ if peeras > 65535 then return true; ### communities do not support AS32
+ if (0,peeras) ~ bgp_community then return false;
+ if (myas,peeras) ~ bgp_community then return true;
+ if (0, myas) ~ bgp_community then return false;
+ return true;
+}
+
+{% for item in rr.values() %} 
+protocol bgp {{ item.bgp_friendly_name }} from RR {
+    description "{{ item.bgp_friendly_name }}";
+    neighbor {{ item.bgp_neighbor_ipaddress }} as {{ item.bgp_neighbor_asn -}};
+    rr cluster id {{ item.bgp_cluster_id }};
+{% endfor -%}
+}
+{% for item in rs.values() %} 
+protocol bgp {{ item.bgp_friendly_name }} from PEERS {
+    description "{{ item.bgp_friendly_name }}";
+    neighbor {{ item.bgp_neighbor_ipaddress }} as {{ item.bgp_neighbor_asn -}};
+    import filter bgp_in;
+    export where bgp_out({{ item.bgp_neighbor_asn -}});
+{% endfor -%}
+}

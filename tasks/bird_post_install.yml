@@ -46,7 +46,7 @@
 
 - name: Drop bird configuration files
   template:
-    src: bird-common.conf.j2
+    src: bird-conf.j2
     dest: "{{ item.config_file }}"
     owner: "root"
     group: "root"
@@ -56,10 +56,34 @@
   loop: "{{ bird_configs }}"
   tags:
     - bird-config
+
+- name: Drop bird ibgp template
+  template:
+    src: bird-bgp-rr-template.j2
+    dest: "/etc/bird.rr.bgp.template"
+    owner: "root"
+    group: "root"
+    mode: "0644"
+  register: bird_results_rr
+  loop: "{{ query('dict', rr) }}"
+  tags:
+    - bird-config
+
+- name: Drop bird ebgp template
+  template:
+    src: bird-bgp-rs-template.j2
+    dest: "/etc/bird.rs.bgp.template"
+    owner: "root"
+    group: "root"
+    mode: "0644"
+  register: bird_results_rs
+  loop: "{{ query('dict', rs) }}"
+  tags:
+    - bird-config
     
 - name: Drop bird bgp static routes
   template:
-    src: bgp-static.conf.j2
+    src: bgp-static-conf.j2
     dest: "/etc/bgp-static.conf"
     owner: "root"
     group: "root"
@@ -78,9 +102,9 @@
     mode: "0644"
   register: bird_results_includes
   loop: 
-    - { src: 'bird-bgp.conf.j2', dest: '/etc/bird-bgp.conf' }
-    - { src: 'ipv4-filters.conf.j2', dest: '/etc/ipv4-filters.conf' }
-    - { src: 'bgp-static.conf.j2', dest: '/etc/bgp-static.conf' }
+    - { src: 'bird-bgp-clients.j2', dest: '/etc/bird.bgp.clients' }
+    - { src: 'ipv4-filters-conf.j2', dest: '/etc/ipv4.filters' }
+  
   tags:
     - bird-config
 
@@ -168,7 +192,16 @@
     - upstart-init
     - bird-init
 
-- name: Add BGP firewall rules
+- name: Add BGP TCP firewall rules
+  firewalld:
+    source: "{{ item }}"
+    port: 179/tcp
+    permanent: true
+    state: enabled
+  with_items:
+    - "{{ bgp_local_cidr }}"
+
+- name: Add BGP UDP firewall rules
   firewalld:
     source: "{{ item }}"
     port: 179/tcp
