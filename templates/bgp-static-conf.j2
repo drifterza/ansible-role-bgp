@@ -1,6 +1,0 @@
-# {{ ansible_managed }}
-protocol static static_bgp {
-{% for item in routes.values() %}
-  route {{ item.ipaddress | indent(2) -}}:{{ item.subnet | indent(2) }} via {{ bgp_neighbor_ipaddress | indent(2) -}};
-{% endfor -%}
-}

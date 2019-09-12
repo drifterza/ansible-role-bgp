@@ -1,0 +1,4 @@
+- name: ansible-logrotate
+  src: https://github.com/nickhammond/ansible-logrotate.git
+  scm: git
+  version: master

@@ -22,18 +22,6 @@
     - bird-config
     - bird-init
 
-- name: Set fact for automatically enabling networks (IPv6)
-  set_fact:
-    bird_ipv6_enabled: >-
-      {{ (ansible_default_ipv6 is defined
-         and ansible_default_ipv6['scope'] is defined
-         and ansible_default_ipv6['scope'] == 'global') | bool }}
-  when:
-    - "bird_ipv6_enabled == 'detect'"
-  tags:
-    - bird-config
-    - bird-init
-
 - name: Ensure log file exists and is owned correctly
   file:
     path: "{{ bird_syslog_location }}"
@@ -57,42 +45,34 @@
   tags:
     - bird-config
 
-- name: Drop bird ibgp template
+- name: Drop bird RR template
   template:
     src: bird-bgp-rr-template.j2
-    dest: "/etc/bird.rr.bgp.template"
+    dest: "/etc/bird.bgp.rr.template"
     owner: "root"
     group: "root"
     mode: "0644"
   register: bird_results_rr
   loop: "{{ query('dict', rr) }}"
+  when:
+    - "bird_bgp_rr_enabled | bool"
   tags:
     - bird-config
 
-- name: Drop bird ebgp template
+- name: Drop bird RS template
   template:
     src: bird-bgp-rs-template.j2
-    dest: "/etc/bird.rs.bgp.template"
+    dest: "/etc/bird.bgp.rs.template"
     owner: "root"
     group: "root"
     mode: "0644"
   register: bird_results_rs
+  when:
+    - "bird_bgp_rs_enabled | bool"
   loop: "{{ query('dict', rs) }}"
   tags:
     - bird-config
     
-- name: Drop bird bgp static routes
-  template:
-    src: bgp-static-conf.j2
-    dest: "/etc/bgp-static.conf"
-    owner: "root"
-    group: "root"
-    mode: "0644"
-  register: bird_results_static
-  loop: "{{ query('dict', routes) }}"
-  tags:
-    - bird-config
-
 - name: Drop include configuration files
   template:
     src: "{{ item.src }}"
@@ -103,14 +83,13 @@
   register: bird_results_includes
   loop: 
     - { src: 'bird-bgp-clients.j2', dest: '/etc/bird.bgp.clients' }
-    - { src: 'ipv4-filters-conf.j2', dest: '/etc/ipv4.filters' }
-  
+    - { src: 'bird-ipv4-filters.j2', dest: '/etc/bird.ipv4.filters' }
   tags:
     - bird-config
 
 - name: Restart bird services
   service:
-    name: "{{ item.item.service }}"
+    name: "bird"
     state: restarted
   when: "item is changed"
   ignore_errors: "{{ ansible_check_mode | default(false) }}"
@@ -130,16 +109,27 @@
     - upstart-init
     - bird-init
 
-- name: Restart bird services after static routes
+- name: Restart bird services after RR changes
   service:
     name: "bird"
     state: restarted
   when: "item is changed"
   ignore_errors: "{{ ansible_check_mode | default(false) }}"
-  loop: "{{ bird_results_static.results }}"
+  loop: "{{ bird_results_rr.results }}"
   tags:
     - upstart-init
-    - bird-init  
+    - bird-init
+
+- name: Restart bird services after RS changes
+  service:
+    name: "bird"
+    state: restarted
+  when: "item is changed"
+  ignore_errors: "{{ ansible_check_mode | default(false) }}"
+  loop: "{{ bird_results_rs.results }}"
+  tags:
+    - upstart-init
+    - bird-init
 
 - name: Disable inactive BIRD BGP services and remove from bootup start
   service:
@@ -155,7 +145,7 @@
     - upstart-init
     - bird-init
 
-- name: Start active BIRD BGP services and add to bootup start
+- name: Start and activate BIRD BGP services on startup
   service:
     name: "{{ item.service }}"
     enabled: true
@@ -199,16 +189,20 @@
     permanent: true
     state: enabled
   with_items:
-    - "{{ bgp_local_cidr }}"
+    - "{{ bird_local_cidr }}"
+  when:
+    - "enable_firewalld | bool"
 
 - name: Add BGP UDP firewall rules
   firewalld:
     source: "{{ item }}"
-    port: 179/tcp
+    port: 179/udp
     permanent: true
     state: enabled
   with_items:
-    - "{{ bgp_local_cidr }}"
+    - "{{ bird_local_cidr }}"
+  when:
+    - "enable_firewalld | bool"
 
 - name: Start active firewalld services and add to bootup start
   service:
