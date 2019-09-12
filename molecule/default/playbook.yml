@@ -11,7 +11,19 @@
         - bird.bgp.rr.template
         - bird.bgp.rs.template
         - bird.bgp.clients
-    - role: ansible-logrotate
+    - role: '~/.ansible/roles/ansible-logrotate'
+      logrotate_scripts:
+        - name: bird-logrotate
+          path: /var/log/bird.log
+          options:
+            - daily
+            - weekly
+            - size 25M
+            - rotate 7
+            - missingok
+            - compress
+            - delaycompress
+            - copytruncate
   vars:
     rr:
       172.17.0.0:
@@ -30,18 +42,7 @@
         ipaddress: 172.19.0.0
         subnet: 255.255.255.0
         bird_neighbor_ipaddress: "{{ bird_router_id }}"
-    logrotate_scripts:
-      - name: bird-logrotate
-        path: /var/log/bird.log
-        options:
-          - daily
-          - weekly
-          - size 25M
-          - rotate 7
-          - missingok
-          - compress
-          - delaycompress
-          - copytruncate
+
   post_tasks:
     - name: Check bird is running
       command: pgrep -a bird
