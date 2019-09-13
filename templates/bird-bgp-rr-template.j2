@@ -13,7 +13,7 @@ template bgp RR {
   rr client;                                              # make defined neighbors rr clients
   igp table master;                                       # necessary to resolve the next-hop
   table inet0;                                            # make BGP use this table
-  import filter bgp_in;                                   # just accept everything
+  import all;                                             # just accept everything
   export all;                                             # and advertise it to all the neigbors
   connect retry time 10;                                  # reconnect try after 10s
   hold time 30;                                           # hold time send in BGP messages
