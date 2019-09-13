@@ -7,8 +7,6 @@ router id {{ bird_router_id }};
 define myas = {{ bird_local_asn }};
 define peeras = {{ bird_neighbor_asn }};
 
-debug protocols all;
-
 {% for include in item.includes %}
 include "{{ include }}";
 {% endfor -%}

@@ -59,32 +59,38 @@ bird_friendly_name: "bird"  # Ensure the friendly name uses lowercase and unders
 bird_default_protocols:
   kernel: "{{ bird_protocols_kernel }}"
   device: "{{ bird_protocols_device }}"
+  pipes: "{{ bird_protocols_pipes }}"
 
 bird_protocols_device: |
   scan time 10;
 
 bird_protocols_kernel: |
-  scan time 20;
+  learn;
   persist;
+  scan time 10;
   export all;
   import filter default_gw_filter;
 
+bird_protocols_pipes: |
+  table master;
+  mode transparent;
+  
 rr:
-  127.0.0.0:
+  172.16.0.0:
     bird_friendly_name: "bird_rr" # Ensure the friendly name uses lowercase and underscores to create long names #
-    bird_neighbor_ipaddress: 127.0.0.1 # Only internal neighbor can be RR client #
+    bird_neighbor_ipaddress: 172.16.0.2 # Only internal neighbor can be RR client #
     bird_neighbor_asn: 65000 # ASN needs to be the same ASN as the peer to act as a RR client #
     bird_cluster_id: "1.0.0.1" # Needed to peer with Calico #
 
 rs:
-  127.0.0.0:
+  172.17.0.0:
     bird_friendly_name: "bird_rs" # Ensure the friendly name uses lowercase and underscores to create long names #
-    bird_neighbor_ipaddress: 8.8.8.8 # Only external neighbor can be RS client #
+    bird_neighbor_ipaddress: 172.17.0.2 # Only external neighbor can be RS client #
     bird_neighbor_asn: 65001 # ASN needs to be the PEERS ASN #
 
 static:
-  127.0.0.0:
+  8.8.8.8:
     bird_friendly_name: "bird_static" # Ensure the friendly name uses lowercase and underscores to create long names #
-    ipaddress: 127.0.0.0
-    subnet: 255.0.0.0
-    bird_neighbor_ipaddress: 127.0.0.1
+    ipaddress: 8.8.8.8
+    subnet: 255.255.255.255
+    bird_neighbor_ipaddress: 172.16.0.2

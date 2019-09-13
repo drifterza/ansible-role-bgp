@@ -22,6 +22,9 @@ function bgp_out(int peeras)
 {% if bird_bgp_static_enabled == true %}
 protocol static static_bgp {
 {% for item in static.values() %}
+  import all;         # Import all
+  table testtable;    # Connect to a non-default routing table
+  check link;         # Advertise routes only if link is up
   route {{ item.ipaddress | indent(2) -}}:{{ item.subnet | indent(2) }} via {{ item.bird_neighbor_ipaddress | indent(2) -}};
 {% endfor -%}
 }

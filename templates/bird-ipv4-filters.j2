@@ -1,5 +1,9 @@
 # {{ ansible_managed }}
 
+filter default_gw_filter {
+  if net = 0.0.0.0/0 then reject;
+}
+
 function avoid_martians()
 prefix set martians;
 {
@@ -16,8 +20,3 @@ function avoid_crappy_prefixes()
   if net.len > 24 then return false;
   return true;
 }
-
-filter default_gw_filter {
-  if net = 0.0.0.0/0 then reject;
-}
-

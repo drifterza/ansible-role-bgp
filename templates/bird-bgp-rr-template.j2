@@ -18,5 +18,5 @@ template bgp RR {
   connect retry time 10;                               # reconnect try after 10s
   hold time 30;                                        # hold time send in BGP messages
   source address {{ ansible_default_ipv4['address'] }};# Source BGP from this IP address
-  graceful restart;
+  graceful restart;                                    # Gracefully restarts and not loads every routing table from scratch
 }
