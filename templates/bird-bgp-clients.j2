@@ -35,10 +35,9 @@ protocol static static_bgp {
 protocol bgp {{ item.bird_friendly_name }} from RR {
     neighbor {{ item.bird_neighbor_ipaddress }} as {{ item.bird_neighbor_asn -}};
     rr cluster id {{ item.bird_cluster_id }};
-
-{% endif -%}
-{% endfor -%}
 }
+{% endfor -%
+{% endif -%}
 
 {% if bird_bgp_rs_enabled == true %}
 {% for item in rs.values() %} 
@@ -46,7 +45,6 @@ protocol bgp {{ item.bird_friendly_name }} from PEERS {
     neighbor {{ item.bird_neighbor_ipaddress }} as {{ item.bird_neighbor_asn -}};
     import filter bgp_in;
     export where bgp_out({{ item.bird_neighbor_asn -}});
-
+}
 {% endfor -%}
 {% endif -%}
-}
