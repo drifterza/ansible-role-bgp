@@ -59,7 +59,6 @@ bird_friendly_name: "bird"  # Ensure the friendly name uses lowercase and unders
 bird_default_protocols:
   kernel: "{{ bird_protocols_kernel }}"
   device: "{{ bird_protocols_device }}"
-  pipes: "{{ bird_protocols_pipes }}"
 
 bird_protocols_device: |
   scan time 10;
@@ -70,10 +69,6 @@ bird_protocols_kernel: |
   scan time 10;
   export all;
   import filter default_gw_filter;
-
-bird_protocols_pipes: |
-  table master;
-  mode transparent;
   
 rr:
   172.16.0.0:
