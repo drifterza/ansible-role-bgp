@@ -1,42 +1,52 @@
 # {{ ansible_managed }}
 
-### Generic Input Filter
-
-filter bgp_in {
- if avoid_crappy_prefixes() then accept;
- else reject;
-}
-
-{% if bird_bgp_static_enabled == true %}
-protocol static static_bgp {
-{% for item in static.values() %}
-  import all;         # Import all
-  table inet2;        # Connect to a non-default routing table
-  check link;         # Advertise routes only if link is up
-  route {{ item.ipaddress | indent(2) -}}:{{ item.subnet | indent(2) }} via {{ item.bird_neighbor_ipaddress | indent(2) -}};
-{% endfor %}
-}
-{% endif %}
-
 {% if bird_bgp_rr_enabled == true %}
+table inet0;
 {% for item in rr.values() %} 
-protocol bgp {{ item.bird_friendly_name }} from RR {
-    local as {{ item.bird_local_asn -}};
-    neighbor {{ item.bird_neighbor_ipaddress }} as {{ item.bird_neighbor_asn -}};
-    rr cluster id {{ item.bird_cluster_id }};
-    import filter bgp_in;
-    export all;
+protocol bgp {{ item.bird_friendly_name }} {
+  debug all;                                              
+  local as {{ item.bird_local_as }};
+  multihop;
+  rr client;
+  igp table master;
+  table inet0;
+  connect retry time 10;
+  hold time 30;
+  graceful restart;
+  neighbor {{ item.bird_neighbor_ipaddress }} as {{ item.bird_neighbor_as -}};
+  rr cluster id {{ item.bird_cluster_id }};
+  import filter bgp_in;
+  export all;
 }
 {% endfor %}
 {% endif %}
 
 {% if bird_bgp_rs_enabled == true %}
+table inet1;
 {% for item in rs.values() %} 
-protocol bgp {{ item.bird_friendly_name }} from PEERS {
-    local as {{ item.bird_local_asn -}};
-    neighbor {{ item.bird_neighbor_ipaddress }} as {{ item.bird_neighbor_asn -}};
-    import filter bgp_in;
-    export all;
+protocol bgp {{ item.bird_friendly_name }} {
+  debug all;
+  local as {{ item.bird_local_as }};
+  multihop;
+  import limit 10000;
+  rs client;
+  default bgp_local_pref 10;
+  graceful restart;
+  neighbor {{ item.bird_neighbor_ipaddress }} as {{ item.bird_neighbor_as -}};
+  import filter bgp_in;
+  export all;
 }
 {% endfor %}
+{% endif %}
+
+{% if bird_bgp_static_enabled == true %}
+table inet2;        # Connect to a non-default routing table
+protocol static static_bgp {
+{% for item in static.values() %}
+  import all;
+  export all;         
+  check link;
+  route {{ item.ipaddress | indent(2) -}}:{{ item.subnet | indent(2) }} via {{ item.bird_neighbor_ipaddress | indent(2) -}};
+{% endfor %}
+}
 {% endif %}

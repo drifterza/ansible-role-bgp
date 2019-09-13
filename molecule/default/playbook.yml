@@ -3,14 +3,11 @@
   hosts: all
   roles:
     - role: "{{ playbook_dir | dirname | dirname | basename }}"
+      enable_firewalld: true
+      bird_local_cidr: "172.17.0.0/16"
       bird_bgp_rr_enabled: true
       bird_bgp_rs_enabled: true
       bird_bgp_static_enabled: true
-      bird_ipv4_includes:
-        - bird.ipv4.filters
-        - bird.bgp.rr.template
-        - bird.bgp.rs.template
-        - bird.bgp.clients
     - role: '~/.ansible/roles/ansible-logrotate'
       logrotate_scripts:
         - name: bird-logrotate
@@ -28,14 +25,16 @@
     rr:
       172.17.0.0:
         bird_friendly_name: "bird_rr"
+        bird_local_as: 65001
         bird_neighbor_ipaddress: "{{ bird_router_id }}"
-        bird_neighbor_asn: 65000
-        bird_cluster_id: "1.0.0.1"
+        bird_neighbor_as: 65001
+        bird_cluster_id: 1.0.0.1
     rs:
       172.18.0.0:
         bird_friendly_name: "bird_rs"
+        bird_local_as: 65000
         bird_neighbor_ipaddress: 172.18.0.1
-        bird_neighbor_asn: 65001
+        bird_neighbor_as: 65001
     static:
       172.19.0.0:
         bird_friendly_name: "bird_static"

@@ -44,35 +44,7 @@
   loop: "{{ bird_configs }}"
   tags:
     - bird-config
-
-- name: Drop bird RR template
-  template:
-    src: bird-bgp-rr-template.j2
-    dest: "/etc/bird.bgp.rr.template"
-    owner: "root"
-    group: "root"
-    mode: "0644"
-  register: bird_results_rr
-  loop: "{{ query('dict', rr) }}"
-  when:
-    - "bird_bgp_rr_enabled | bool"
-  tags:
-    - bird-config
-
-- name: Drop bird RS template
-  template:
-    src: bird-bgp-rs-template.j2
-    dest: "/etc/bird.bgp.rs.template"
-    owner: "root"
-    group: "root"
-    mode: "0644"
-  register: bird_results_rs
-  when:
-    - "bird_bgp_rs_enabled | bool"
-  loop: "{{ query('dict', rs) }}"
-  tags:
-    - bird-config
-    
+ 
 - name: Drop include configuration files
   template:
     src: "{{ item.src }}"
@@ -105,28 +77,6 @@
   when: "item is changed"
   ignore_errors: "{{ ansible_check_mode | default(false) }}"
   loop: "{{ bird_results_includes.results }}"
-  tags:
-    - upstart-init
-    - bird-init
-
-- name: Restart bird services after RR changes
-  service:
-    name: "bird"
-    state: restarted
-  when: "item is changed"
-  ignore_errors: "{{ ansible_check_mode | default(false) }}"
-  loop: "{{ bird_results_rr.results }}"
-  tags:
-    - upstart-init
-    - bird-init
-
-- name: Restart bird services after RS changes
-  service:
-    name: "bird"
-    state: restarted
-  when: "item is changed"
-  ignore_errors: "{{ ansible_check_mode | default(false) }}"
-  loop: "{{ bird_results_rs.results }}"
   tags:
     - upstart-init
     - bird-init

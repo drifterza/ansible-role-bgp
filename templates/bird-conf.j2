@@ -5,6 +5,12 @@ log syslog all;
 
 router id {{ bird_router_id }};
 
+function avoid_crappy_prefixes()
+{
+  if net.len < 8 then return false;
+  if net.len > 24 then return false;
+  return true;
+}
 
 {% for include in item.includes %}
 include "{{ include }}";
