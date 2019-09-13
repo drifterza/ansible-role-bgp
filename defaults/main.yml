@@ -76,12 +76,14 @@ rr:
     bird_neighbor_ipaddress: 172.16.0.2 # Only internal neighbor can be RR client #
     bird_neighbor_asn: 65000 # ASN needs to be the same ASN as the peer to act as a RR client #
     bird_cluster_id: "1.0.0.1" # Needed to peer with Calico #
+    bird_local_asn: 65000 # Used to override the template import
 
 rs:
   172.17.0.0:
     bird_friendly_name: "bird_rs" # Ensure the friendly name uses lowercase and underscores to create long names #
     bird_neighbor_ipaddress: 172.17.0.2 # Only external neighbor can be RS client #
     bird_neighbor_asn: 65001 # ASN needs to be the PEERS ASN #
+    bird_local_asn: 65000 # Used to override the template import
 
 static:
   8.8.8.8:
