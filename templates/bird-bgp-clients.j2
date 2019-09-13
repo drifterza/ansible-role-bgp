@@ -3,20 +3,8 @@
 ### Generic Input Filter
 
 filter bgp_in {
- if avoid_martians() && avoid_crappy_prefixes() then accept;
+ if avoid_crappy_prefixes() then accept;
  else reject;
-}
-
-### BGP output filter (based on communities)
-
-function bgp_out(int peeras)
-{
- if ! (source = RTS_BGP ) then return false;
- if peeras > 65535 then return true; ### communities do not support AS32
- if (0,peeras) ~ bgp_community then return false;
- if (myas,peeras) ~ bgp_community then return true;
- if (0, myas) ~ bgp_community then return false;
- return true;
 }
 
 {% if bird_bgp_static_enabled == true %}

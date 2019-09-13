@@ -6,23 +6,23 @@ table inet1;
 # the following is a template. The template needs to be applied to individual neighbors.
 
 template bgp PEERS {
-  debug all;                                           # debug BGP
-  description "{{ bird_friendly_name }}";              # Description of PEERS
-  local as {{ bird_local_asn }};                       # the AS used by the local BGP speaker
-  multihop;                                            # was not default in 1.3.11
-  import all;                                          # just accept everything
-  export all;                                          # and advertise it to all the neigbors
-  import limit 10000;                                  # Route limits
-  rs client;                                           # Be a route server and treat the neighbor as a route server client. 
-                                                       # A route server is used as a replacement for full mesh EBGP routing in Internet exchange
-                                                       # points in a similar way to route reflectors used in IBGP routing. BIRD does not implement obsoleted RFC 1863,
-                                                       # but uses ad-hoc implementation, which behaves like plain EBGP but reduces modifications to advertised route 
-                                                       # attributes to be transparent (for example does not prepend its AS number to AS PATH attribute and keeps MED attribute). Default: disabled. 
+  debug all;                                              # debug BGP
+  description "{{ bird_friendly_name }}";                 # Description of PEERS
+  local as {{ bird_local_asn }};                          # the AS used by the local BGP speaker
+  multihop;                                               # was not default in 1.3.11
+  import all;                                             # just accept everything
+  export all;                                             # and advertise it to all the neigbors
+  import limit 10000;                                     # Route limits
+  rs client;                                              # Be a route server and treat the neighbor as a route server client. 
+                                                          # A route server is used as a replacement for full mesh EBGP routing in Internet exchange
+                                                          # points in a similar way to route reflectors used in IBGP routing. BIRD does not implement obsoleted RFC 1863,
+                                                          # but uses ad-hoc implementation, which behaves like plain EBGP but reduces modifications to advertised route 
+                                                          # attributes to be transparent (for example does not prepend its AS number to AS PATH attribute and keeps MED attribute). Default: disabled. 
 
-  default bgp_local_pref 10;                           # A default value for the Local Preference attribute. It is used when a new Local Preference attribute is attached to a 
-                                                       # route by the BGP protocol itself (for example, if a route is received through eBGP and therefore does not have such attribute). 
-                                                       # Default: 100 (0 in pre-1.2.0 versions of BIRD).
+  default bgp_local_pref 10;                              # A default value for the Local Preference attribute. It is used when a new Local Preference attribute is attached to a 
+                                                          # route by the BGP protocol itself (for example, if a route is received through eBGP and therefore does not have such attribute). 
+                                                          # Default: 100 (0 in pre-1.2.0 versions of BIRD).
                                                        
-  source address {{ ansible_default_ipv4['address'] }};# Source BGP from this IP address
+  source address {{ ansible_default_ipv4['address'] }};   # Source BGP from this IP address
   graceful restart;
 }

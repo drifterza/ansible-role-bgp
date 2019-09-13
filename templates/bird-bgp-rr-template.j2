@@ -6,17 +6,17 @@ table inet0;
 # the following is a template. The template needs to be applied to individual neighbors.
 
 template bgp RR {
-  debug all;                                           # debug BGP
-  description "{{ bird_friendly_name }}";              # Description of RR
-  local as {{ bird_local_asn }};                       # the AS used by the local BGP speaker
-  multihop;                                            # was not default in 1.3.11
-  rr client;                                           # make defined neighbors rr clients
-  igp table master;                                    # necessary to resolve the next-hop
-  table inet0;                                         # make BGP use this table
-  import all;                                          # just accept everything
-  export all;                                          # and advertise it to all the neigbors
-  connect retry time 10;                               # reconnect try after 10s
-  hold time 30;                                        # hold time send in BGP messages
-  source address {{ ansible_default_ipv4['address'] }};# Source BGP from this IP address
-  graceful restart;                                    # Gracefully restarts and not loads every routing table from scratch
+  debug all;                                              # debug BGP
+  description "{{ bird_friendly_name }}";                 # Description of RR
+  local as {{ bird_local_asn }};                          # the AS used by the local BGP speaker
+  multihop;                                               # was not default in 1.3.11
+  rr client;                                              # make defined neighbors rr clients
+  igp table master;                                       # necessary to resolve the next-hop
+  table inet0;                                            # make BGP use this table
+  import all;                                             # just accept everything
+  export all;                                             # and advertise it to all the neigbors
+  connect retry time 10;                                  # reconnect try after 10s
+  hold time 30;                                           # hold time send in BGP messages
+  source address {{ ansible_default_ipv4['address'] }};   # Source BGP from this IP address
+  graceful restart;                                       # Gracefully restarts and not loads every routing table from scratch
 }
