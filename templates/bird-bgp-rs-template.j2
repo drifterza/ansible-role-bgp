@@ -10,7 +10,7 @@ template bgp PEERS {
   description "{{ bird_friendly_name }}";                 # Description of PEERS
   local as {{ bird_local_asn }};                          # the AS used by the local BGP speaker
   multihop;                                               # was not default in 1.3.11
-  import all;                                             # just accept everything
+  import filter bgp_in;                                   # just accept everything
   export all;                                             # and advertise it to all the neigbors
   import limit 10000;                                     # Route limits
   rs client;                                              # Be a route server and treat the neighbor as a route server client. 

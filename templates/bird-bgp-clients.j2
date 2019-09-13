@@ -11,7 +11,7 @@ filter bgp_in {
 protocol static static_bgp {
 {% for item in static.values() %}
   import all;         # Import all
-  table testtable;    # Connect to a non-default routing table
+  table inet2;        # Connect to a non-default routing table
   check link;         # Advertise routes only if link is up
   route {{ item.ipaddress | indent(2) -}}:{{ item.subnet | indent(2) }} via {{ item.bird_neighbor_ipaddress | indent(2) -}};
 {% endfor %}
@@ -31,8 +31,6 @@ protocol bgp {{ item.bird_friendly_name }} from RR {
 {% for item in rs.values() %} 
 protocol bgp {{ item.bird_friendly_name }} from PEERS {
     neighbor {{ item.bird_neighbor_ipaddress }} as {{ item.bird_neighbor_asn -}};
-    import filter bgp_in;
-    export where bgp_out({{ item.bird_neighbor_asn -}});
 }
 {% endfor %}
 {% endif %}
