@@ -26,9 +26,9 @@ protocol static static_bgp {
   table testtable;    # Connect to a non-default routing table
   check link;         # Advertise routes only if link is up
   route {{ item.ipaddress | indent(2) -}}:{{ item.subnet | indent(2) }} via {{ item.bird_neighbor_ipaddress | indent(2) -}};
-{% endfor -%}
+{% endfor %}
 }
-{% endif -%}
+{% endif %}
 
 {% if bird_bgp_rr_enabled == true %}
 {% for item in rr.values() %} 
@@ -36,8 +36,8 @@ protocol bgp {{ item.bird_friendly_name }} from RR {
     neighbor {{ item.bird_neighbor_ipaddress }} as {{ item.bird_neighbor_asn -}};
     rr cluster id {{ item.bird_cluster_id }};
 }
-{% endfor -%
-{% endif -%}
+{% endfor %}
+{% endif %}
 
 {% if bird_bgp_rs_enabled == true %}
 {% for item in rs.values() %} 
@@ -46,5 +46,5 @@ protocol bgp {{ item.bird_friendly_name }} from PEERS {
     import filter bgp_in;
     export where bgp_out({{ item.bird_neighbor_asn -}});
 }
-{% endfor -%}
-{% endif -%}
+{% endfor %}
+{% endif %}
