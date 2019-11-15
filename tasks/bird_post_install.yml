@@ -134,23 +134,12 @@
 
 - name: Add BGP TCP firewall rules
   firewalld:
-    source: "{{ item }}"
-    port: 179/tcp
+    port: '{{ item }}'
     permanent: true
     state: enabled
-  with_items:
-    - "{{ bird_local_cidr }}"
-  when:
-    - "enable_firewalld | bool"
-
-- name: Add BGP UDP firewall rules
-  firewalld:
-    source: "{{ item }}"
-    port: 179/udp
-    permanent: true
-    state: enabled
-  with_items:
-    - "{{ bird_local_cidr }}"
+  loop:
+    - "179/tcp"
+    - "179/udp"
   when:
     - "enable_firewalld | bool"
 
