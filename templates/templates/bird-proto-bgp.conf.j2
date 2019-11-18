@@ -1,7 +1,6 @@
 # {{ ansible_managed }}
 
 {% if bird_bgp_rr_enabled == true %}
-table inet0;
 {% for item in rr.values() %} 
 protocol bgp {{ item.bird_friendly_name }} {
   local as {{ item.bird_local_as }};
@@ -19,14 +18,11 @@ protocol bgp {{ item.bird_friendly_name }} {
   connect delay time 2;
   connect retry time 5;
   error wait time 5,30;
-  igp table master;
-  table inet0;
 }
 {% endfor %}
 {% endif %}
 
 {% if bird_bgp_rs_enabled == true %}
-table inet1;
 {% for item in rs.values() %} 
 protocol bgp {{ item.bird_friendly_name }} {
   local as {{ item.bird_local_as }};
@@ -43,16 +39,13 @@ protocol bgp {{ item.bird_friendly_name }} {
   connect delay time 2;
   connect retry time 5;
   error wait time 5,30;
-  table inet1;
 }
 {% endfor %}
 {% endif %}
 
 {% if bird_bgp_static_enabled == true %}
-table inet2;
 protocol static static_bgp {
 {% for item in static.values() %}
-  table inet2;
   import all;
   export all;         
   check link;

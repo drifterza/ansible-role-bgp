@@ -13,6 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+- include_tasks: bird_security.yml
+
 - name: Set fact for automatically enabling networks (IPv4)
   set_fact:
     bird_ipv4_enabled: "{{ ansible_default_ipv4 is defined | bool }}"
@@ -32,134 +34,66 @@
   tags:
     - bird-config
 
-- name: Drop bird configuration files
-  template:
-    src: bird-conf.j2
-    dest: "{{ item.config_file }}"
-    owner: "root"
-    group: "root"
-    mode: "0644"
-  register: bird_results
-  when: "item.enabled | bool"
-  loop: "{{ bird_configs }}"
-  tags:
-    - bird-config
- 
-- name: Drop include configuration files
+- name: Ensure "{{ bird_conf_dir }}" directory exists
+  file:
+    dest: /etc/bird
+    state: directory
+    owner: bird
+    group: bird
+
+- name: Ensure "{{ bird_conf_dir }}/peers" directory exists
+  file:
+    dest: /etc/bird/peers
+    state: directory
+    owner: bird
+    group: bird
+
+- name: Ensure "{{ bird_conf_dir }}/templates" directory exists
+  file:
+    dest: /etc/bird/templates
+    state: directory
+    owner: bird
+    group: bird
+
+- name: Drop configuration files
   template:
     src: "{{ item.src }}"
     dest: "{{ item.dest }}"
     owner: "root"
     group: "root"
     mode: "0644"
-  register: bird_results_includes
   loop: 
-    - { src: 'bird-bgp-clients.j2', dest: '/etc/bird.bgp.clients' }
-    - { src: 'bird-ipv4-filters.j2', dest: '/etc/bird.ipv4.filters' }
+    - { src: 'bird-functions.conf.j2', dest: '/etc/bird/functions.conf' }
+    - { src: 'bird-filters.conf.j2', dest: '/etc/bird/filters.conf' }
+    - { src: 'bird-service.j2', dest: '/usr/lib/systemd/system/bird.service' }
+    - { src: 'bird-conf.j2', dest: '/etc/bird/bird.conf' }
+  notify: restart bird
   tags:
     - bird-config
 
-- name: Restart bird services
-  service:
-    name: "bird"
-    state: restarted
-  when: "item is changed"
-  ignore_errors: "{{ ansible_check_mode | default(false) }}"
-  loop: "{{ bird_results.results }}"
-  tags:
-    - upstart-init
-    - bird-init
+- name: Reload systemd
+  systemd:
+    daemon_reload: yes
 
-- name: Restart bird services after includes
-  service:
-    name: "bird"
-    state: restarted
-  when: "item is changed"
-  ignore_errors: "{{ ansible_check_mode | default(false) }}"
-  loop: "{{ bird_results_includes.results }}"
-  tags:
-    - upstart-init
-    - bird-init
-
-- name: Disable inactive BIRD BGP services and remove from bootup start
-  service:
-    name: "{{ item.service }}"
-    enabled: false
-    state: stopped
-  when:
-    - "not item.enabled | bool"
-    - "item.enabled != 'skip'"
-  loop: "{{ bird_configs }}"
-  ignore_errors: "{{ ansible_check_mode | default(false) }}"
-  tags:
-    - upstart-init
-    - bird-init
-
-- name: Start and activate BIRD BGP services on startup
+- name: Start active firewalld services and add to bootup start
   service:
     name: "{{ item.service }}"
     enabled: true
     state: started
-  when:
-    - "item.enabled | bool"
-    - "item.enabled != 'skip'"
-  loop: "{{ bird_configs }}"
-  ignore_errors: "{{ ansible_check_mode | default(false) }}"
+  loop:
+    - { service: firewalld }
+    - { service: bird }
   tags:
     - upstart-init
     - bird-init
 
-- name: Disable inactive firewalld services and remove from bootup start
-  systemd: 
-    name: firewalld 
-    enabled: false
-    state: stopped
-  when:
-    - "not enable_firewalld | bool"
-  ignore_errors: "{{ ansible_check_mode | default(false) }}"
-  tags:
-    - upstart-init
-    - bird-init
-
-- name: Enable firewalld services and add to bootup start
-  systemd: 
-    name: firewalld 
-    enabled: true
-  when:
-    - "enable_firewalld | bool"
-  ignore_errors: "{{ ansible_check_mode | default(false) }}"
-  tags:
-    - upstart-init
-    - bird-init
-
-- name: Add BGP TCP firewall rules
+- name: Add Firewall rules
   firewalld:
     port: '{{ item }}'
     permanent: true
     state: enabled
+    immediate: true
   loop:
     - "179/tcp"
     - "179/udp"
-  when:
-    - "enable_firewalld | bool"
 
-- name: Start active firewalld services and add to bootup start
-  service:
-    name: firewalld
-    enabled: true
-    state: started
-  when:
-    - "enable_firewalld | bool"
-  ignore_errors: "{{ ansible_check_mode | default(false) }}"
-  tags:
-    - upstart-init
-    - bird-init
-
-- include_tasks: bird_security.yml
-
-- name: Reload firewalld as a last check
-  command: /bin/firewall-cmd --reload
-  become: yes
-  when:
-    - "enable_firewalld | bool"
-    

@@ -5,29 +5,7 @@ log syslog all;
 
 router id {{ bird_router_id }};
 
-function avoid_crappy_prefixes()
-{
-  if net.len < 8 then return false;
-  if net.len > 24 then return false;
-  return true;
-}
-
-{% for include in item.includes %}
-include "{{ include }}";
-{% endfor -%}
-
-
-{% for proto_type, protos in item.protocols.items() %}
-{% if protos is string %}
-protocol {{ proto_type }} {
-  {{ protos | indent(2) -}}
-}
-{% else %}
-{% for proto_name, proto_attrs in protos.items() %}
-protocol {{ proto_type }} {{ proto_name }} {
-  {{ proto_attrs | indent(2) -}}
-}
-
-{% endfor %}
-{% endif %}
-{% endfor %}
+include "/etc/bird/functions.conf";
+include "/etc/bird/filters.conf";
+include "/etc/bird/templates/*.conf";
+include "/etc/bird/peers/*.conf";

@@ -1,10 +1,12 @@
 # {{ ansible_managed }}
 
+############################
+### Generic Input Filter ###
+############################
+
 filter default_gw_filter {
   if net = 0.0.0.0/0 then reject;
 }
-
-### Generic Input Filter
 
 filter bgp_in {
  if avoid_crappy_prefixes() then accept;

@@ -13,54 +13,32 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-- name: Copy RPM key
-  copy:
-    src: RPM-GPG-KEY-NETWORK-CZ
-    dest: /etc/pki/rpm-gpg/RPM-GPG-KEY-NETWORK-CZ
-    owner: root
-    group: root
-    mode: '0644'
+- name: Adding required GPG Key
+  rpm_key:
+    state: present
+    key: http://rpm.knot-dns.cz/redhat/RPM-GPG-KEY-network.cz
   when:
     - bird_package_source == 'bird'
-  tags:
-    - bird-keys
-    
-- name: Add BIRD yum key
-  command: rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-NETWORK-CZ
-  args:
-    warn: no
-  register: add_keys
-  until: add_keys is success
-  retries: 5
-  delay: 2
-  when:
-    - bird_package_source == 'bird'
-  tags:
-    - bird-keys
 
 - name: Add BIRD repo
   yum_repository:
-    name: "{{ item.name }}"
-    description: "{{ item.description }}"
-    baseurl: "{{ item.baseurl }}"
-    enabled: "{{ item.enabled | default(omit) }}"
-    gpgcheck: "{{ item.gpgcheck | default(True) }}"
-    gpgkey: "{{ item.gpgkey }}"
-    repo_gpgcheck: "{{ item.repo_gpgcheck | default(omit) }}"
-    priority: "{{ item.priority | default(omit) }}"
-    state: "{{ item.state | default(omit) }}"
+    name: bird2
+    file: bird2
+    baseurl: ftp://repo.network.cz/pub/bird/centos/7/x86_64/
+    gpgcheck: yes
+    gpgkey: file:///etc/pki/rpm-gpg/RPM-GPG-KEY-network.cz
+    description: BIRD packages on CentOS 7
+    enabled: yes
   register: add_repos
   until: add_repos is success
   retries: 5
   delay: 2
-  loop:
-    - "{{ bird_repo }}"
   when:
     - bird_package_source == 'bird'
   tags:
     - bird-repos
 
-- name: Install BIRD yum pre packages
+- name: Install BIRD packages
   yum:
     pkg: "{{ item }}"
     state: "{{ bird_package_state }}"
@@ -68,8 +46,14 @@
   until: install_packages is success
   retries: 5
   delay: 2
-  loop: "{{ bird_required_packages }}"
+  loop: "{{ bird_packages }}"
   when:
-    - bird_package_source == 'epel'
+    - bird_package_source == 'bird'
   tags:
     - bird-yum-packages
+
+- name: Ensure bind.conf from rpm package is removed.
+  file:
+    path: /etc/bird.conf
+    state: absent
+  when: bird_package_source == 'bird'
