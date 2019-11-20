@@ -12,3 +12,15 @@ filter bgp_in {
  if avoid_crappy_prefixes() then accept;
  else reject;
 }
+
+filter kernel_export_ipv4 {
+  if source = RTS_STATIC then reject;
+  krt_prefsrc = {{ ansible_default_ipv4['address'] }};
+  accept;
+}
+
+filter kernel_export_ipv6 {
+  if source = RTS_STATIC then reject;
+  krt_prefsrc = {{ ansible_default_ipv6['address'] }};
+  accept;
+}

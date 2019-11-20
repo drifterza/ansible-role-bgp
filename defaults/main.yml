@@ -39,7 +39,8 @@ bird_bgp_static_enabled: false
 
 bird_syslog_location: "/var/log/bird.log"
 
-bird_local_cidr: "127.0.0.1"
+bird_ipv4_cidr: "127.0.0.1/8"
+bird_ipv6_cidr: "127.0.0.1/16"
 bird_neighbor_ipaddress: "127.0.0.1"
 bird_friendly_name: "bird"  # Ensure the friendly name uses lowercase and underscores to create long names #
 

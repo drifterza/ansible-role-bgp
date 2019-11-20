@@ -43,19 +43,30 @@
 
 - name: Ensure "{{ bird_conf_dir }}/peers" directory exists
   file:
-    dest: /etc/bird/peers
+    dest: "{{ bird_conf_dir }}/peers"
     state: directory
     owner: bird
     group: bird
 
 - name: Ensure "{{ bird_conf_dir }}/templates" directory exists
   file:
-    dest: /etc/bird/templates
+    dest: "{{ bird_conf_dir }}/templates"
     state: directory
     owner: bird
     group: bird
 
-- name: Drop configuration files
+- name: Drop systemd unit file
+  template:
+    src: bird-service.j2
+    dest: '/usr/lib/systemd/system/bird.service'
+    owner: "root"
+    group: "root"
+    mode: "0644"
+  notify: reload systemd
+  tags:
+    - bird-config
+
+- name: Drop core configuration files
   template:
     src: "{{ item.src }}"
     dest: "{{ item.dest }}"
@@ -65,15 +76,10 @@
   loop: 
     - { src: 'bird-functions.conf.j2', dest: '/etc/bird/functions.conf' }
     - { src: 'bird-filters.conf.j2', dest: '/etc/bird/filters.conf' }
-    - { src: 'bird-service.j2', dest: '/usr/lib/systemd/system/bird.service' }
     - { src: 'bird-conf.j2', dest: '/etc/bird/bird.conf' }
   notify: restart bird
   tags:
     - bird-config
-
-- name: Reload systemd
-  systemd:
-    daemon_reload: yes
 
 - name: Start active firewalld services and add to bootup start
   service:

@@ -16,13 +16,8 @@
 
 enable_firewalld: false
 bird_package_source: bird
-
-# bird configurations are stored in /etc on RHEL instead of /etc/bird
 bird_conf_dir: /etc/bird
 bird_packages: 
   - bird2
   - firewalld
 
-# RHEL uses a combined systemd unit for bird/bird6 called "bird" which manages
-# both daemons.
-bird_ipv6_enabled: skip

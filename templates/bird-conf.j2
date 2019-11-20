@@ -5,6 +5,46 @@ log syslog all;
 
 router id {{ bird_router_id }};
 
+protocol device {
+    scan time 10;
+}
+
+protocol kernel {
+    scan time 20;
+    
+    ipv6 {
+        import default_gw_filter;
+        export kernel_export_ipv6;
+    };
+};
+
+protocol kernel {
+    scan time 20;
+
+    ipv4 {
+        import default_gw_filter;
+        export kernel_export_ipv4;
+    };
+}
+
+protocol static {
+    route {{ bird_ipv4_cidr }} reject;
+
+    ipv4 {
+        import bgp_in;
+        export none;
+    };
+}
+
+protocol static {
+    route {{ bird_ipv6_cidr }} reject;
+
+    ipv6 {
+        import bgp_in;
+        export none;
+    };
+}
+
 include "/etc/bird/functions.conf";
 include "/etc/bird/filters.conf";
 include "/etc/bird/templates/*.conf";
