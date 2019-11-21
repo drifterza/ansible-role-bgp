@@ -46,16 +46,21 @@ bird_ipv6_cidr: "fdd1:ac8c:0557:7ce1::/64"
 bird_neighbor_ipaddress: "127.0.0.1"
 bird_friendly_name: "bird"  # Ensure the friendly name uses lowercase and underscores to create long names #
 
-rr:
+rr_ipv4:
   172.17.0.0:
-    bird_friendly_name: "bird_rr" # Ensure the friendly name uses lowercase and underscores to create long names #
-    bird_local_as: 65000 # Used to override the template import
+    bird_friendly_name: "bird_rr_ipv4" # Ensure the friendly name uses lowercase and underscores to create long names #
+    bird_local_as_ipv4: 65000 # Used to override the template import
     bird_neighbor_ipaddress_ipv4: '172.16.0.2' # Only internal neighbor can be RR client #
-    bird_neighbor_ipaddress_ipv6: '2001:db8:1::242:ac11:2' # Only internal neighbor can be RR client #
     bird_neighbor_as_ipv4: 65000 # ASN needs to be the same ASN as the peer to act as a RR client #
+    
+rr_ipv6:
+  2001:db8:1::242:ac11:2:
+    bird_friendly_name: "bird_rr_ipv6" # Ensure the friendly name uses lowercase and underscores to create long names #
+    bird_local_as_ipv6: 65000 # Used to override the template import
+    bird_neighbor_ipaddress_ipv6: '2001:db8:1::242:ac11:2' # Only internal neighbor can be RR client #
     bird_neighbor_as_ipv6: 65000 # ASN needs to be the same ASN as the peer to act as a RR client #
 
-rs:
+rs_ipv4:
   172.18.0.0:
     bird_friendly_name: "bird_rs" # Ensure the friendly name uses lowercase and underscores to create long names #
     bird_local_as: 65000 # Used to override the template import

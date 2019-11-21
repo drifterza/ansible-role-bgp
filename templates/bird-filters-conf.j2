@@ -6,7 +6,7 @@ filter default_gw_filter {
 
 filter bgp_import_ipv4 {
   if is_valid_network() && avoid_crappy_prefixes() && !is_self_net() then {
-    if (roa_check(is_roa, net, bgp_path.last) != ROA_VALID) then {
+    if (roa_check(is_roa_v4, net, bgp_path.last) != ROA_VALID) then {
       print "[IS] ROA check failed for ", net, " ASN ", bgp_path.last;
       reject;
       } else accept;

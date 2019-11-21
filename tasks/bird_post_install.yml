@@ -59,7 +59,8 @@
     - { src: 'bird-filters-conf.j2', dest: '/etc/bird/filters.conf' }
     - { src: 'bird-function-conf.j2', dest: '/etc/bird/functions.conf' }
     - { src: 'bird-conf.j2', dest: '/etc/bird/bird.conf' }
-    - { src: 'bird-proto-bgp.conf.j2', dest: '/etc/bird/peers/bgp.conf' }
+    - { src: 'bird-proto-bgp-v4-conf.j2', dest: '/etc/bird/peers/bgp_ipv4.conf' }
+    - { src: 'bird-proto-bgp-v6-conf.j2', dest: '/etc/bird/peers/bgp_ipv6.conf' }
   notify: restart bird
   tags:
     - bird-config
@@ -90,5 +91,6 @@
   cron:
     name: roa_check
     minute: "*/15"
-    job: "curl -sfSLR {-o,-z}/etc/bird/roa_is_v6.conf https://dn42.tech9.io/roa/bird6_roa_dn42.conf && curl -sfSLR {-o,-z}/etc/bird/roa_is.conf https://dn42.tech9.io/roa/bird_roa_dn42.conf && sed -i 's/roa/route/g' /etc/bird/roa_is{,_v6}.conf && birdc configure"
+    job: "curl -sfSLR {-o,-z}/etc/bird/roa_is_v4.conf https://caddy.platform.is/roa/bird_roa_is_v4.conf && curl -sfSLR {-o,-z}/etc/bird/roa_is_v6.conf https://caddy.platform.is/roa/bird_roa_is_v6.conf && sed -i 's/roa/route/g' /etc/bird/roa_is{,_v6}.conf && birdc configure"
     user: bird
+    cron_file: ansible_roa

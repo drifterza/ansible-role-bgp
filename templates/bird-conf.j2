@@ -1,7 +1,7 @@
 # {{ ansible_managed }}
 
-log "{{ bird_syslog_location }}" all;
-log syslog all;
+log syslog { info, remote, warning, error, auth, fatal, bug };
+log "{{ bird_syslog_location }}" { debug, remote, trace };
 
 router id {{ bird_router_id }};
 
@@ -13,12 +13,12 @@ protocol device {
     scan time 10;
 }
 
-roa4 table is_roa;
+roa4 table is_roa_v4;
 roa6 table is_roa_v6;
 
 protocol static {
-    roa4 { table is_roa; };
-    include "/etc/bird/roa_is.conf";
+    roa4 { table is_roa_v4; };
+    include "/etc/bird/roa_is_v4.conf";
 };
 
 protocol static {
@@ -31,8 +31,8 @@ protocol kernel {
     scan time 20;
 
     ipv4 {
-        import default_gw_filter;
-        export kernel_export_ipv4;
+        import filter default_gw_filter;
+        export filter kernel_export_ipv4;
     };
 }
 {% endif %}
@@ -42,8 +42,8 @@ protocol kernel {
     scan time 20;
     
     ipv6 {
-        import default_gw_filter;
-        export kernel_export_ipv6;
+        import filter default_gw_filter;
+        export filter kernel_export_ipv6;
     };
 }
 {% endif %}

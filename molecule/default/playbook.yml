@@ -22,14 +22,6 @@
             - delaycompress
             - copytruncate
   vars:
-    rr:
-      172.17.0.0:
-        bird_friendly_name: "bird_rr"
-        bird_local_as: 65001
-        bird_neighbor_ipaddress_ipv4: "{{ bird_router_id }}"
-        bird_neighbor_ipaddress_ipv6: '2001:db8:1::242:ac11:2'
-        bird_neighbor_as_ipv4: 65001
-        bird_neighbor_as_ipv6: 65001
     rs:
       172.18.0.0:
         bird_friendly_name: "bird_rs"
