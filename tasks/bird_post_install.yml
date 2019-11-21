@@ -34,6 +34,19 @@
   tags:
     - bird-config
 
+- name: Ensure ROA files exists and is owned correctly
+  file:
+    path: "{{ item.dest }}"
+    owner: bird
+    group: bird
+    mode: '0664'
+    state: touch
+  loop:
+    - { dest: /etc/bird/roa_is_v4.conf }
+    - { dest: /etc/bird/roa_is_v6.conf }
+  tags:
+    - bird-config
+
 - name: Ensure "{{ bird_conf_dir }}" directory exists
   file:
     dest: /etc/bird

@@ -14,7 +14,7 @@ protocol bgp {{ item.bird_friendly_name }} {
     import filter bgp_import_ipv4;
     export filter bgp_export_ipv4;
     add paths on;
-};
-)
+  };
+}
 {% endfor %}
 {% endif %}

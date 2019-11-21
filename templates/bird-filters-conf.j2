@@ -6,20 +6,20 @@ filter default_gw_filter {
 
 filter bgp_import_ipv4 {
   if is_valid_network() && avoid_crappy_prefixes() && !is_self_net() then {
-    if (roa_check(is_roa_v4, net, bgp_path.last) != ROA_VALID) then {
-      print "[IS] ROA check failed for ", net, " ASN ", bgp_path.last;
-      reject;
+    #if (roa_check(is_roa_v4, net, bgp_path.last) != ROA_VALID) then {
+    #  print "[IS] ROA check failed for ", net, " ASN ", bgp_path.last;
+    #  reject;
       } else accept;
-    } else reject;
+    #} else reject;
 }
 
 filter bgp_import_ipv6 {
   if is_valid_network_v6() && avoid_crappy_prefixes() && !is_self_net_v6() then {
-    if (roa_check(is_roa_v6, net, bgp_path.last) != ROA_VALID) then {
-      print "[IS] ROA check failed for ", net, " ASN ", bgp_path.last;
-      reject;
+    #if (roa_check(is_roa_v6, net, bgp_path.last) != ROA_VALID) then {
+    #  print "[IS] ROA check failed for ", net, " ASN ", bgp_path.last;
+    #  reject;
       } else accept;
-    } else reject;
+    #} else reject;
 }
 
 filter bgp_export_ipv4 {
