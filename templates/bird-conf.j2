@@ -5,12 +5,26 @@ log syslog all;
 
 router id {{ bird_router_id }};
 
-include "/etc/bird/filters.conf";
 include "/etc/bird/functions.conf";
+include "/etc/bird/filters.conf";
+
 
 protocol device {
     scan time 10;
 }
+
+roa4 table is_roa;
+roa6 table is_roa_v6;
+
+protocol static {
+    roa4 { table is_roa; };
+    include "/etc/bird/roa_is.conf";
+};
+
+protocol static {
+    roa6 { table is_roa_v6; };
+    include "/etc/bird/roa_is_v6.conf";
+};
 
 {% if bird_ipv4_enabled is defined %}
 protocol kernel {

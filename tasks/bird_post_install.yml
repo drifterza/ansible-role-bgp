@@ -60,7 +60,7 @@
     - { src: 'bird-function-conf.j2', dest: '/etc/bird/functions.conf' }
     - { src: 'bird-conf.j2', dest: '/etc/bird/bird.conf' }
     - { src: 'bird-proto-bgp.conf.j2', dest: '/etc/bird/peers/bgp.conf' }
-  notify: restart bird- "bird_ipv4_enabled == 'detect'"
+  notify: restart bird
   tags:
     - bird-config
 
@@ -86,3 +86,9 @@
     - "179/tcp"
     - "179/udp"
 
+- name: Add ROA check to cron
+  cron:
+    name: roa_check
+    minute: "*/15"
+    job: "curl -sfSLR {-o,-z}/etc/bird/roa_is_v6.conf https://dn42.tech9.io/roa/bird6_roa_dn42.conf && curl -sfSLR {-o,-z}/etc/bird/roa_is.conf https://dn42.tech9.io/roa/bird_roa_dn42.conf && sed -i 's/roa/route/g' /etc/bird/roa_is{,_v6}.conf && birdc configure"
+    user: bird
