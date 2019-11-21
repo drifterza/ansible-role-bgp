@@ -1,0 +1,20 @@
+# {{ ansible_managed }}
+
+{% if bird_bgp_rr_enabled == true %}
+{% for item in rr_ipv4.values() %} 
+protocol bgp {{ item.bird_friendly_name }} {
+  local as {{ item.bird_local_as_ipv4 }};
+  path metric 1;
+  rr client;
+  connect retry time 10;
+  hold time 30;
+  graceful restart;
+  neighbor {{ item.bird_neighbor_ipaddress_ipv4 }} as {{ item.bird_neighbor_as_ipv4 -}};
+  ipv4 {  
+    import filter bgp_import_ipv4;
+    export filter bgp_export_ipv4;
+    add paths on;
+  };
+}
+{% endfor %}
+{% endif %}

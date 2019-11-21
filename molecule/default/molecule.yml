@@ -8,15 +8,8 @@ lint:
   options:
     config-file: molecule/default/yaml-lint.yml
 platforms:
-  - name: instance
-    image: "${docker_image:-quay.io/loganv/docker-ci}:${docker_image_tag:-centos-7}"
-    #image: "${docker_image:-quay.io/loganv/docker-ci}:${docker_image_tag:-ubuntu-bionic}"
-    #image: "${docker_image:-quay.io/loganv/docker-ci}:${docker_image_tag:-ubuntu-xenial}"
-    #image: "${docker_image:-quay.io/loganv/docker-ci}:${docker_image_tag:-ubuntu-trusty}"
-    #image: "${docker_image:-quay.io/loganv/docker-ci}:${docker_image_tag:-debian-stretch}"
-    # NOTE(logan): Uncomment user arg once upstream PR is released
-    # https://github.com/metacloud/molecule/pull/1526
-    # user: root
+  - name: centos7
+    image: 'geerlingguy/docker-centos7-ansible:latest'
     command: ${docker_command:-/lib/systemd/systemd}
     volumes:
       - /sys/fs/cgroup:/sys/fs/cgroup:ro
@@ -24,6 +17,8 @@ platforms:
     pre_build_image: true
 provisioner:
   name: ansible
+  options:
+    vvv: True
   lint:
     name: ansible-lint
   playbooks:

@@ -1,33 +1,51 @@
 # {{ ansible_managed }}
 
-log "{{ bird_syslog_location }}" all;
-log syslog all;
+log syslog { info, remote, warning, error, auth, fatal, bug };
+log "{{ bird_syslog_location }}" { debug, remote, trace };
 
 router id {{ bird_router_id }};
 
-function avoid_crappy_prefixes()
-{
-  if net.len < 8 then return false;
-  if net.len > 24 then return false;
-  return true;
+include "/etc/bird/functions.conf";
+include "/etc/bird/filters.conf";
+
+
+protocol device {
+    scan time 10;
 }
 
-{% for include in item.includes %}
-include "{{ include }}";
-{% endfor -%}
+roa4 table is_roa_v4;
+roa6 table is_roa_v6;
 
+protocol static {
+    roa4 { table is_roa_v4; };
+    include "/etc/bird/roa_is_v4.conf";
+};
 
-{% for proto_type, protos in item.protocols.items() %}
-{% if protos is string %}
-protocol {{ proto_type }} {
-  {{ protos | indent(2) -}}
+protocol static {
+    roa6 { table is_roa_v6; };
+    include "/etc/bird/roa_is_v6.conf";
+};
+
+{% if bird_ipv4_enabled is defined %}
+protocol kernel {
+    scan time 20;
+
+    ipv4 {
+        import filter default_gw_filter;
+        export filter kernel_export_ipv4;
+    };
 }
-{% else %}
-{% for proto_name, proto_attrs in protos.items() %}
-protocol {{ proto_type }} {{ proto_name }} {
-  {{ proto_attrs | indent(2) -}}
-}
-
-{% endfor %}
 {% endif %}
-{% endfor %}
+
+{% if bird_ipv6_enabled is defined %}
+protocol kernel {
+    scan time 20;
+    
+    ipv6 {
+        import filter default_gw_filter;
+        export filter kernel_export_ipv6;
+    };
+}
+{% endif %}
+
+include "/etc/bird/peers/*.conf";

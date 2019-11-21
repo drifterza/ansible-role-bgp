@@ -33,3 +33,6 @@
     - bird_gather_net_facts | bool
 
 - include: bird_post_install.yml
+
+- include_tasks: bird_security.yml
+  when: enable_security is defined

@@ -4,10 +4,10 @@
   roles:
     - role: "{{ playbook_dir | dirname | dirname | basename }}"
       enable_firewalld: true
-      bird_local_cidr: "172.17.0.0/16"
+      bird_ipv4_cidr: "172.17.0.0/16"
       bird_bgp_rr_enabled: true
-      bird_bgp_rs_enabled: true
-      bird_bgp_static_enabled: true
+      bird_bgp_rs_enabled: false
+      bird_bgp_static_enabled: false
     - role: '~/.ansible/roles/ansible-logrotate'
       logrotate_scripts:
         - name: bird-logrotate
@@ -22,13 +22,6 @@
             - delaycompress
             - copytruncate
   vars:
-    rr:
-      172.17.0.0:
-        bird_friendly_name: "bird_rr"
-        bird_local_as: 65001
-        bird_neighbor_ipaddress: "{{ bird_router_id }}"
-        bird_neighbor_as: 65001
-        bird_cluster_id: 1.0.0.1
     rs:
       172.18.0.0:
         bird_friendly_name: "bird_rs"

@@ -15,7 +15,7 @@
 
 bird_package_state: latest
 
-bird_conf_dir: /etc/bird
+bird_conf_dir: "/etc/bird"
 
 bird_router_id: "{{ ansible_default_ipv4['address'] }}" 
 
@@ -27,6 +27,7 @@ bird_gather_net_facts: true
 # Auto-enable bird if an ipv4 default route is present
 # Set to true/false to override auto detection
 bird_ipv4_enabled: detect
+bird_ipv6_enabled: detect
 
 # Enable the following for Route Reflector mode. See the README.md for examples
 bird_bgp_rr_enabled: false
@@ -39,44 +40,27 @@ bird_bgp_static_enabled: false
 
 bird_syslog_location: "/var/log/bird.log"
 
-bird_configs:
-  - config_file: "{{ bird_conf_dir }}/bird.conf"
-    enabled: "{{ bird_ipv4_enabled }}"
-    service: bird
-    includes: "{{ bird_ipv4_includes }}"
-    protocols: "{{ bird_ipv4_protocols }}"
+bird_ipv4_cidr: "127.0.0.1/8"
+bird_ipv6_cidr: "fdd1:ac8c:0557:7ce1::/64"
 
-bird_ipv4_includes:
-  - bird.ipv4.filters # This has to be loaded first or else the functions are undefined for use in the bird.bgp.clients #
-  - bird.bgp.clients
-
-bird_ipv4_protocols: "{{ bird_default_protocols }}"
-bird_local_cidr: "127.0.0.1"
 bird_neighbor_ipaddress: "127.0.0.1"
 bird_friendly_name: "bird"  # Ensure the friendly name uses lowercase and underscores to create long names #
-bird_default_protocols:
-  kernel: "{{ bird_protocols_kernel }}"
-  device: "{{ bird_protocols_device }}"
 
-bird_protocols_device: |
-  scan time 10;
-
-bird_protocols_kernel: |
-  learn;
-  persist;
-  scan time 10;
-  export all;
-  import filter default_gw_filter;
-  
-rr:
+rr_ipv4:
   172.17.0.0:
-    bird_friendly_name: "bird_rr" # Ensure the friendly name uses lowercase and underscores to create long names #
-    bird_local_as: 65000 # Used to override the template import
-    bird_neighbor_ipaddress: 172.16.0.2 # Only internal neighbor can be RR client #
-    bird_neighbor_as: 65000 # ASN needs to be the same ASN as the peer to act as a RR client #
-    bird_cluster_id: 1.0.0.1 # Needed to peer with Calico #
+    bird_friendly_name: "bird_rr_ipv4" # Ensure the friendly name uses lowercase and underscores to create long names #
+    bird_local_as_ipv4: 65000 # Used to override the template import
+    bird_neighbor_ipaddress_ipv4: '172.16.0.2' # Only internal neighbor can be RR client #
+    bird_neighbor_as_ipv4: 65000 # ASN needs to be the same ASN as the peer to act as a RR client #
+    
+rr_ipv6:
+  2001:db8:1::242:ac11:2:
+    bird_friendly_name: "bird_rr_ipv6" # Ensure the friendly name uses lowercase and underscores to create long names #
+    bird_local_as_ipv6: 65000 # Used to override the template import
+    bird_neighbor_ipaddress_ipv6: '2001:db8:1::242:ac11:2' # Only internal neighbor can be RR client #
+    bird_neighbor_as_ipv6: 65000 # ASN needs to be the same ASN as the peer to act as a RR client #
 
-rs:
+rs_ipv4:
   172.18.0.0:
     bird_friendly_name: "bird_rs" # Ensure the friendly name uses lowercase and underscores to create long names #
     bird_local_as: 65000 # Used to override the template import

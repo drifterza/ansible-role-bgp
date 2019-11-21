@@ -14,28 +14,12 @@
 # limitations under the License.
 # can be bird or epel
 
+enable_security: true
 enable_firewalld: false
-bird_package_source: epel
-
-# bird configurations are stored in /etc on RHEL instead of /etc/bird
-bird_conf_dir: /etc
-bird_keys: file:///etc/pki/rpm-gpg/RPM-GPG-KEY-NETWORK-CZ
-bird_yum_repo_url: ftp://repo.network.cz/pub/bird/centos/7/x86_64/
-bird_repo:
-  state: present
-  name: bird
-  description: BIRD packages on CentOS 7
-  baseurl: "{{ bird_yum_repo_url }}"
-  gpgkey: "{{ bird_keys }}"
-
-
-bird_required_packages:
-  - "{{ 'epel-release' if bird_package_source == 'epel' }}"
-
+bird_package_source: bird
+bird_conf_dir: /etc/bird
 bird_packages: 
-  - bird
+  - bird2
   - firewalld
+  - crontabs
 
-# RHEL uses a combined systemd unit for bird/bird6 called "bird" which manages
-# both daemons.
-bird_ipv6_enabled: skip
