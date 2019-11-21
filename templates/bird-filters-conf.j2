@@ -1,9 +1,4 @@
 # {{ ansible_managed }}
-
-############################
-### Generic Input Filter ###
-############################
-
 filter default_gw_filter {
   if net = 0.0.0.0/0 then reject;
 }
@@ -13,14 +8,18 @@ filter bgp_in {
  else reject;
 }
 
+{% if bird_ipv4_enabled is defined %}
 filter kernel_export_ipv4 {
   if source = RTS_STATIC then reject;
   krt_prefsrc = {{ ansible_default_ipv4['address'] }};
   accept;
 }
+{% endif %}
 
+{% if bird_ipv6_enabled is defined %}
 filter kernel_export_ipv6 {
   if source = RTS_STATIC then reject;
   krt_prefsrc = {{ ansible_default_ipv6['address'] }};
   accept;
 }
+{% endif}

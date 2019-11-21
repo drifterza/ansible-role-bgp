@@ -10,6 +10,10 @@
         name: "{{ item }}"
         docker_host: "{{ item.docker_host | default(lookup('env', 'DOCKER_HOST') or 'unix://var/run/docker.sock') }}"
         state: present
+        enable_ipv6: yes
+        ipam_config:
+          - subnet: 172.4.27.0/24
+          - subnet: fdd1:ac8c:0557:7ce2::/64
       with_items: "{{ molecule_yml.platforms | molecule_get_docker_networks }}"
 
     - name: Create molecule instance(s)

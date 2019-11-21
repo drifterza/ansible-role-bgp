@@ -1,9 +1,4 @@
 # {{ ansible_managed }}
-
-############################
-### Generic Function #######
-############################
-
 function avoid_crappy_prefixes()
 {
   if net.len < 8 then return false;

@@ -4,7 +4,7 @@
   roles:
     - role: "{{ playbook_dir | dirname | dirname | basename }}"
       enable_firewalld: true
-      bird_local_cidr: "172.17.0.0/16"
+      bird_ipv4_cidr: "172.17.0.0/16"
       bird_bgp_rr_enabled: true
       bird_bgp_rs_enabled: true
       bird_bgp_static_enabled: true

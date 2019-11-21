@@ -13,14 +13,62 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-- include_tasks: bird_install_apt.yml
+- name: Adding required GPG Key
+  rpm_key:
+    state: present
+    key: http://rpm.knot-dns.cz/redhat/RPM-GPG-KEY-network.cz
   when:
-    - ansible_pkg_mgr == 'apt'
-  tags:
-    - install-apt
+    - bird_package_source == 'bird'
 
-- include_tasks: bird_install_yum.yml
+- name: Add BIRD repo
+  yum_repository:
+    name: bird2
+    file: bird2
+    baseurl: ftp://repo.network.cz/pub/bird/centos/7/x86_64/
+    gpgcheck: yes
+    gpgkey: file:///etc/pki/rpm-gpg/RPM-GPG-KEY-network.cz
+    description: BIRD packages on CentOS 7
+    enabled: yes
+  register: add_repos
+  until: add_repos is success
+  retries: 5
+  delay: 2
   when:
-    - ansible_pkg_mgr == 'yum'
+    - bird_package_source == 'bird'
   tags:
-    - install-yum
+    - bird-repos
+
+- name: Install BIRD packages
+  yum:
+    pkg: "{{ item }}"
+    state: "{{ bird_package_state }}"
+  register: install_packages
+  until: install_packages is success
+  retries: 5
+  delay: 2
+  loop: "{{ bird_packages }}"
+  when:
+    - bird_package_source == 'bird'
+  tags:
+    - bird-yum-packages
+
+- name: Ensure bind.conf from rpm package is removed.
+  file:
+    path: /etc/bird.conf
+    state: absent
+  when: bird_package_source == 'bird'
+
+- name: Drop systemd unit file
+  template:
+    src: bird-service.j2
+    dest: '/usr/lib/systemd/system/bird.service'
+    owner: "root"
+    group: "root"
+    mode: "0644"
+  notify: reload systemd
+  when: bird_package_source == 'bird'
+  tags:
+    - bird-config
+
+- name: Force all notified handlers to run at this point, not waiting for normal sync points
+  meta: flush_handlers

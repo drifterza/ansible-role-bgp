@@ -13,13 +13,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-- include_tasks: bird_security.yml
-
 - name: Set fact for automatically enabling networks (IPv4)
   set_fact:
     bird_ipv4_enabled: "{{ ansible_default_ipv4 is defined | bool }}"
+    bird_ipv6_enabled: "{{ ansible_default_ipv6 is defined | bool }}"
   when:
     - "bird_ipv4_enabled == 'detect'"
+    - "bird_ipv6_enabled == 'detect'"
   tags:
     - bird-config
     - bird-init
@@ -48,24 +48,6 @@
     owner: bird
     group: bird
 
-- name: Ensure "{{ bird_conf_dir }}/templates" directory exists
-  file:
-    dest: "{{ bird_conf_dir }}/templates"
-    state: directory
-    owner: bird
-    group: bird
-
-- name: Drop systemd unit file
-  template:
-    src: bird-service.j2
-    dest: '/usr/lib/systemd/system/bird.service'
-    owner: "root"
-    group: "root"
-    mode: "0644"
-  notify: reload systemd
-  tags:
-    - bird-config
-
 - name: Drop core configuration files
   template:
     src: "{{ item.src }}"
@@ -74,10 +56,11 @@
     group: "root"
     mode: "0644"
   loop: 
-    - { src: 'bird-functions.conf.j2', dest: '/etc/bird/functions.conf' }
-    - { src: 'bird-filters.conf.j2', dest: '/etc/bird/filters.conf' }
+    - { src: 'bird-filters-conf.j2', dest: '/etc/bird/filters.conf' }
+    - { src: 'bird-function-conf.j2', dest: '/etc/bird/functions.conf' }
     - { src: 'bird-conf.j2', dest: '/etc/bird/bird.conf' }
-  notify: restart bird
+    - { src: 'bird-proto-bgp.conf.j2', dest: '/etc/bird/peers/bgp.conf' }
+  notify: restart bird- "bird_ipv4_enabled == 'detect'"
   tags:
     - bird-config
 
