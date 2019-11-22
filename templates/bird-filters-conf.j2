@@ -1,44 +1,43 @@
 # {{ ansible_managed }}
 
-filter default_gw_filter {
+filter default_gw_filter 
+{
   if net = 0.0.0.0/0 then reject;
 }
 
-filter bgp_import_ipv4 {
-  if is_valid_network() && avoid_crappy_prefixes() && !is_self_net() then {
-    #if (roa_check(is_roa_v4, net, bgp_path.last) != ROA_VALID) then {
-    #  print "[IS] ROA check failed for ", net, " ASN ", bgp_path.last;
-    #  reject;
-      } else accept;
-    #} else reject;
+filter bgp_import_ipv4 
+{
+if net_martians_v4() then return false;
+if avoid_crappy_prefixes() then return false;
 }
 
-filter bgp_import_ipv6 {
-  if is_valid_network_v6() && avoid_crappy_prefixes() && !is_self_net_v6() then {
-    #if (roa_check(is_roa_v6, net, bgp_path.last) != ROA_VALID) then {
-    #  print "[IS] ROA check failed for ", net, " ASN ", bgp_path.last;
-    #  reject;
-      } else accept;
-    #} else reject;
+filter bgp_import_ipv6 
+{
+  if net_martians_v6() then return false;
+  if avoid_crappy_prefixes() then return false;
 }
 
-filter bgp_export_ipv4 {
+filter bgp_export_ipv4 
+{
   if is_valid_network() then accept;
   else reject;
 }
 
-filter bgp_export_ipv6 {
+filter bgp_export_ipv6 
+{
   if is_valid_network_v6() then accept;
   else reject;
 }
 
-filter kernel_export_ipv4 {
+filter kernel_export_ipv4 
+{
   if source = RTS_STATIC then reject;
   krt_prefsrc = {{ ansible_default_ipv4['address'] }};
   accept;
 }
 
-filter kernel_export_ipv6 {
+filter kernel_export_ipv6 
+{
   if source = RTS_STATIC then reject;
   krt_prefsrc = {{ ansible_default_ipv6['address'] }};
   accept;

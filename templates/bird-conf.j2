@@ -13,39 +13,33 @@ protocol device {
     scan time 10;
 }
 
-roa4 table is_roa_v4;
-roa6 table is_roa_v6;
+roa4 table r4;
+roa6 table r6;
 
 protocol static {
-    roa4 { table is_roa_v4; };
-    include "/etc/bird/roa_is_v4.conf";
+    roa4 { table r4; };
+    include "/etc/bird/roa_r4.conf";
 };
 
 protocol static {
-    roa6 { table is_roa_v6; };
-    include "/etc/bird/roa_is_v6.conf";
+    roa6 { table r6; };
+    include "/etc/bird/roa_r6.conf";
 };
 
-{% if bird_ipv4_enabled is defined %}
 protocol kernel {
     scan time 20;
-
     ipv4 {
         import filter default_gw_filter;
         export filter kernel_export_ipv4;
     };
 }
-{% endif %}
 
-{% if bird_ipv6_enabled is defined %}
 protocol kernel {
     scan time 20;
-    
     ipv6 {
         import filter default_gw_filter;
         export filter kernel_export_ipv6;
     };
 }
-{% endif %}
 
 include "/etc/bird/peers/*.conf";
