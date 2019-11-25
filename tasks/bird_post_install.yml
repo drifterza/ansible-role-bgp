@@ -50,14 +50,15 @@
 
 - name: Ensure ROA files exists and is owned correctly
   file:
-    path: "{{ item.dest }}"
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
     owner: bird
     group: bird
     mode: '0664'
-    state: touch
+    state: file
   loop:
-    - { dest: /etc/bird/roa_r4.conf }
-    - { dest: /etc/bird/roa_r6.conf }
+    - { src: roa_r4.conf, dest: /etc/bird/roa_r4.conf }
+    - { src: roa_r6.conf, dest: /etc/bird/roa_r6.conf }
   tags:
     - bird-config
 
@@ -104,6 +105,6 @@
 #   cron:
 #     name: roa_check
 #     minute: "*/15"
-#     job: "curl -sfSLR {-o,-z}/etc/bird/roa_is_v4.conf https://caddy.platform.is/roa/bird_roa_is_v4.conf && curl -sfSLR {-o,-z}/etc/bird/roa_is_v6.conf https://caddy.platform.is/roa/bird_roa_is_v6.conf && sed -i 's/roa/route/g' /etc/bird/roa_is{,_v6}.conf && birdc configure"
+#     job: "curl -sfSLR {-o,-z}/etc/bird/roa_v4.conf https://caddy.platform.is/roa/bird_roa_v4.conf && curl -sfSLR {-o,-z}/etc/bird/roa_v6.conf https://caddy.platform.is/roa/bird_roa_v6.conf && sed -i 's/roa/route/g' /etc/bird/roa_{v4,v6}.conf && birdc configure"
 #     user: bird
 #     cron_file: ansible_roa
