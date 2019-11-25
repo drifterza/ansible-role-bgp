@@ -7,22 +7,25 @@ filter default_gw_filter
 
 filter bgp_import_ipv4 
 {
-if ! (avoid_martians_ipv4()) then reject;
-if ! (avoid_crappy_prefixes()) then reject;
+  if ! (avoid_martians_ipv4()) then reject;
+  if ! (avoid_crappy_prefixes()) then reject;
+
+  accept;
 }
 
 filter bgp_import_ipv6 
 {
   if ! (avoid_martians_ipv6()) then reject;
   if ! (avoid_crappy_prefixes()) then reject;
-  else reject;
+  
+  accept;
 }
 
 filter bgp_export_ipv4 
 {
   if is_valid_network() then accept;
   if avoid_crappy_prefixes() then return false;
-  else reject;
+  accept;
 }
 
 filter bgp_export_ipv6 
