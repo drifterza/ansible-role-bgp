@@ -49,16 +49,16 @@
     group: bird
 
 - name: Ensure ROA files exists and is owned correctly
-  file:
+  copy:
     src: "{{ item.src }}"
     dest: "{{ item.dest }}"
     owner: bird
     group: bird
     mode: '0664'
-    state: file
+    backup: yes
   loop:
-    - { src: roa_r4.conf, dest: /etc/bird/roa_r4.conf }
-    - { src: roa_r6.conf, dest: /etc/bird/roa_r6.conf }
+    - { src: files/roa_r4.conf, dest: /etc/bird/roa_r4.conf }
+    - { src: files/roa_r6.conf, dest: /etc/bird/roa_r6.conf }
   tags:
     - bird-config
 
