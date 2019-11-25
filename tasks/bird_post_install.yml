@@ -100,10 +100,10 @@
     - "179/tcp"
     - "179/udp"
 
-- name: Add ROA check to cron
-  cron:
-    name: roa_check
-    minute: "*/15"
-    job: "curl -sfSLR {-o,-z}/etc/bird/roa_is_v4.conf https://caddy.platform.is/roa/bird_roa_is_v4.conf && curl -sfSLR {-o,-z}/etc/bird/roa_is_v6.conf https://caddy.platform.is/roa/bird_roa_is_v6.conf && sed -i 's/roa/route/g' /etc/bird/roa_is{,_v6}.conf && birdc configure"
-    user: bird
-    cron_file: ansible_roa
+# - name: Add ROA check to cron
+#   cron:
+#     name: roa_check
+#     minute: "*/15"
+#     job: "curl -sfSLR {-o,-z}/etc/bird/roa_is_v4.conf https://caddy.platform.is/roa/bird_roa_is_v4.conf && curl -sfSLR {-o,-z}/etc/bird/roa_is_v6.conf https://caddy.platform.is/roa/bird_roa_is_v6.conf && sed -i 's/roa/route/g' /etc/bird/roa_is{,_v6}.conf && birdc configure"
+#     user: bird
+#     cron_file: ansible_roa

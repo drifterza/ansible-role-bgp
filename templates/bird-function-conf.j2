@@ -7,10 +7,10 @@ function is_self_net()
 
 function avoid_crappy_prefixes()
 {
-  if net.len < 8 then return false;
-  if net.len > 24 then return false;
-  if bgp_path.len > 64 then return false; 
-  return true;
+  if bgp_path.first != 64496 then accept;
+  if bgp_path.len > 64 then accept;
+  if bgp_next_hop != from then accept;
+  reject;
 }
 
 function is_valid_network_v6() 
@@ -25,20 +25,30 @@ function is_self_net_v6()
   return net ~ {{ bird_ipv6_cidr }};
 }
 
-function net_martians_v4()
+# This function excludes weird networks
+#  rfc1918, class D, class E, too long and too short prefixes
+function avoid_martians_ipv4()
+prefix set martians;
 {
-    return net ~ [ 10.0.0.0/8+, 172.16.0.0/12+, 192.168.0.0/16+,
-                   0.0.0.0/0, 0.0.0.0/8+, 100.64.0.0/10+, 127.0.0.0/8+,
-                   169.254.0.0/16+, 192.0.0.0/24+, 192.0.2.0/24+,
-                   198.18.0.0/15+, 198.51.100.0/24+, 203.0.113.0/24+,
-                   224.0.0.0/3+,
-                   0.0.0.0/0{25,32} ];
+    martians = [169.254.0.0/16+, 172.16.0.0/12+, 192.168.0.0/16+, 10.0.0.0/8+, 224.0.0.0/4+, 240.0.0.0/4+, 0.0.0.0/32-, 0.0.0.0/0{25,32}, 0.0.0.0/0{0,7} ];
+
+    # Avoid RFC1918 and similar networks
+    if net ~ martians then return false;
+    
+    return true;
+
 }
 
-function net_martians_v6()
+function avoid_martians_ipv6()
+prefix set martians_v6;
 {
-    return net ~ [ ::/0, 2001::/32{33,128}, 2001:10::/28+, 2001:db8::/32+,
-                   2002::/16{17,128} ];
+    martians_v6 = [ ::/0, 2001::/32{33,128}, 2001:10::/28+, 2001:db8::/32+, 2002::/16{17,128} ];
+    
+    # Avoid RFC1918/RFC4193 and similar networks
+    if net ~ martians_v6 then return false;
+
+    return true;
+
 }
 
 function is_valid_network() 

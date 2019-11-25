@@ -41,7 +41,7 @@ bird_bgp_static_enabled: false
 bird_syslog_location: "/var/log/bird.log"
 
 bird_ipv4_cidr: "127.0.0.1/8"
-bird_ipv6_cidr: "fdd1:ac8c:0557:7ce1::/64"
+bird_ipv6_cidr: "2001:db8:1::242:ac11::/64"
 
 bird_neighbor_ipaddress: "127.0.0.1"
 bird_friendly_name: "bird"  # Ensure the friendly name uses lowercase and underscores to create long names #
@@ -63,16 +63,16 @@ rr_ipv6:
 rs_ipv4:
   172.18.0.0:
     bird_friendly_name: "bird_rs_ipv4" # Ensure the friendly name uses lowercase and underscores to create long names #
-    bird_local_as: 65000 # Used to override the template import
-    bird_neighbor_ipaddress: 172.17.0.2 # Only external neighbor can be RS client #
-    bird_neighbor_as: 65001 # ASN needs to be the PEERS ASN #
+    bird_local_as_ipv4: 65000 # Used to override the template import
+    bird_neighbor_ipaddress_ipv4: 172.18.0.2 # Only external neighbor can be RS client #
+    bird_neighbor_as_ipv4: 65001 # ASN needs to be the PEERS ASN #
 
 rs_ipv6:
-  172.18.0.0:
+  2001:db8:1::242:ac11:2:
     bird_friendly_name: "bird_rs_ipv6" # Ensure the friendly name uses lowercase and underscores to create long names #
-    bird_local_as: 65000 # Used to override the template import
-    bird_neighbor_ipaddress: '2001:db8:1::242:ac11:2' # Only external neighbor can be RS client #
-    bird_neighbor_as: 65001 # ASN needs to be the PEERS ASN #
+    bird_local_as_ipv6: 65000 # Used to override the template import
+    bird_neighbor_ipaddress_ipv6: '2001:db8:1::242:ac11:2' # Only external neighbor can be RS client #
+    bird_neighbor_as_ipv6: 65001 # ASN needs to be the PEERS ASN #
 
 static:
   8.8.8.8:
