@@ -13,6 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+bird_password_enabled: false
 bird_package_state: latest
 
 bird_conf_dir: "/etc/bird"
@@ -45,6 +46,7 @@ bird_ipv6_cidr: "fdd1:ac8c:0557:7ce1::/64"
 
 bird_neighbor_ipaddress: "127.0.0.1"
 bird_friendly_name: "bird"  # Ensure the friendly name uses lowercase and underscores to create long names #
+bird_password: "password" # This variable needs to be decrypted from the vault.
 
 rr_ipv4:
   172.17.0.0:

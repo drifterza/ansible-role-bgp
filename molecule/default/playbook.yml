@@ -9,6 +9,7 @@
       bird_bgp_rr_enabled: true
       bird_bgp_rs_enabled: false
       bird_bgp_static_enabled: false
+      bird_password_enabled: true
     - role: '~/.ansible/roles/ansible-logrotate'
       logrotate_scripts:
         - name: bird-logrotate
