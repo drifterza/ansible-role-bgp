@@ -73,14 +73,14 @@ molecule converge
 | bird_ipv4_cidr | `127.0.0.1/8` | defaul ipv4 cidr |
 | bird_ipv6_cidr | `fdd1:ac8c:0557:7ce1::/64` | default ipv6 cidr |
 | bird_neighbor_ipaddress | `"127.0.0.1"` | default neighbour address |
-| bird_friendly_name | `"bird"` | default neighbour name
-| bird_password | `"password"` | default password
+| bird_friendly_name | `"bird"` | default neighbour name |
+| bird_password | `"password"` | default password |
 
 ## Playbooks
 
 Example for using Bird
 
-    - hosts: servers
+    - hosts: serverA
       roles:
          - role: ansible-role-bgp
            enable_firewalld: true
@@ -114,4 +114,40 @@ Example for using Bird
             bird_friendly_name: "bird_rr_ipv6" # Ensure the friendly name uses lowercase and underscores to create long names #
             bird_local_as_ipv6: 65000 # Used to override the template import
             bird_neighbor_ipaddress_ipv6: "2001:db8:1::242:ac11:3" # Only internal neighbor can be RR client #
+            bird_neighbor_as_ipv6: 65000 # ASN needs to be the same ASN as the peer to act as a RR client #
+
+    - hosts: serverB
+      roles:
+         - role: ansible-role-bgp
+           enable_firewalld: true
+           bird_ipv4_cidr: "172.17.0.0/16"
+           bird_bgp_rr_enabled: true
+           bird_bgp_rs_enabled: false
+           bird_bgp_static_enabled: false
+           bird_password_enabled: true
+         - role: '~/.ansible/roles/ansible-logrotate'
+           logrotate_scripts:
+             - name: bird-logrotate
+                path: /var/log/bird.log
+                options:
+                  - daily
+                  - weekly
+                  - size 25M
+                  - rotate 7
+                  - missingok
+                  - compress
+                  - delaycompress
+                  - copytruncate
+      vars:
+        rr_ipv4:
+          172.17.0.0:
+            bird_friendly_name: "bird_rr_ipv4" # Ensure the friendly name uses lowercase and underscores to create long names #
+            bird_local_as_ipv4: 65000 # Used to override the template import
+            bird_neighbor_ipaddress_ipv4: 172.17.0.2 # Only internal neighbor can be RR client #
+            bird_neighbor_as_ipv4: 65000 # ASN needs to be the same ASN as the peer to act as a RR client #
+        rr_ipv6:
+          2001:db8:1::242:ac11:2:
+            bird_friendly_name: "bird_rr_ipv6" # Ensure the friendly name uses lowercase and underscores to create long names #
+            bird_local_as_ipv6: 65000 # Used to override the template import
+            bird_neighbor_ipaddress_ipv6: "2001:db8:1::242:ac11:2" # Only internal neighbor can be RR client #
             bird_neighbor_as_ipv6: 65000 # ASN needs to be the same ASN as the peer to act as a RR client #
