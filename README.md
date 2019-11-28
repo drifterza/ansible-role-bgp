@@ -26,10 +26,6 @@ Configuration is done by editing the configuration file and telling BIRD to reco
 
 | Family | Distribution | Version | Test Status |
 |:-:|:-:|:-:|:-:|
-| Debian | Debian  | Stretch    | [![x86_64](http://img.shields.io/badge/x86_64-passed-006400.svg?style=flat)](#) |
-| Debian | Ubuntu  | Bionic    | [![x86_64](http://img.shields.io/badge/x86_64-passed-006400.svg?style=flat)](#) |
-| Debian | Ubuntu  | Xenial    | [![x86_64](http://img.shields.io/badge/x86_64-passed-006400.svg?style=flat)](#) |
-| Debian | Ubuntu  | Trusty    | [![x86_64](http://img.shields.io/badge/x86_64-passed-006400.svg?style=flat)](#) |
 | RedHat | Centos  | 7         | [![x86_64](http://img.shields.io/badge/x86_64-passed-006400.svg?style=flat)](#) |
 
 ## Requirements
@@ -57,60 +53,64 @@ pip install -r test-requirements.txt
 molecule create
 molecule converge
 ```
-This role currently uses CentOS7 as the molecule image. If you prefer you can change the `molecule/default/molecule.yaml` to test Ubuntu etc...
 
 ## Role Variables
 
 | variable | default | description |
 |--:|:-:|:--|
 | bird_conf_dir | `/etc/bird` | default configuration directory |
-| bird_router_id   | `{{ ansible_default_ipv4['address'] }}` | Default IPv4 from ansible facts |
-| bird_gather_net_facts | `true` | Force an update of the network facts before building the configuration. This is useful when protocol auto detection is used,because the network may have changed since facts were last gathered if they have been cached a while. |
-| bird_ipv4_enabled | `detect` | Auto-enable bird/bird6 if an ipv4/ipv6 default route is present (Set to true/false to override auto detection) |
-| bird_ipv6_enabled | `detect` | Auto-enable bird/bird6 if an ipv4/ipv6 default route is present (Set to true/false to override auto detection) |
-| bird_local_as | `65000` | Default private Autonumous number |
-| bird_neighbor_address | `127.0.0.1` | Default BGP Peer address |
-| bird_cidr | `127.0.0.0/20` | Default CIDR to use with FirewallD |
-| bird_neighbor_as | `65000` | Default Peer Autonumous number |
-| bird_bgp_description | `I am a Bird` | Description of the BGP session |
-| enable_firewalld | `false` | By default FirewallD is not enabled | 
-
-
-### Debian-only
-
-| variable | default | description |
-|--:|:-:|:--|
-| bird_apt_repo_url | `http://bird.network.cz/debian/` | default repository url |
-
-### Ubuntu-only
-
-| variable | default | description |
-|--:|:-:|:--|
-| bird_apt_repo_url | `http://ppa.launchpad.net/cz.nic-labs/bird/ubuntu` | default repository url |
-
-### Redhat-only
-
-| variable | default | description |
-|--:|:-:|:--|
-| bird_package_source | `epel` | default repository to fetch packages |
-| bird_ipv6_enabled | `skip` | RHEL uses a combined systemd unit for bird/bird6 called "bird" which manages both daemons. |
+| bird_password_enabled | false | no protocol passwords |
+| bird_package_state | latest | Latest release |
+| bird_router_id | `"{{ ansible_default_ipv4['address'] }}"` | defaults to first ip address |
+| bird_gather_net_facts | true | Force an update of the network facts before building the configuration. This is useful when protocol auto detection is used, because the network may have changed since facts were last gathered if they have been cached a while.|
+| bird_ipv4_enabled | detect | Auto-enable bird if an ipv4 default route is present
+| bird_ipv6_enabled | detect | Auto-enable bird if an ipv6 default route is present |
+| bird_bgp_rr_enabled | false | enable route reflector mode |
+| bird_bgp_rs_enabled | false | enable route server mode |
+| bird_bgp_static_enabled | false | enable static routes |
+| bird_syslog_location | `"/var/log/bird.log"` | default location for the logs |
+| bird_ipv4_cidr | `127.0.0.1/8` | defaul ipv4 cidr |
+| bird_ipv6_cidr | `fdd1:ac8c:0557:7ce1::/64` | default ipv6 cidr |
+| bird_neighbor_ipaddress | `"127.0.0.1"` | default neighbour address |
+| bird_friendly_name | `"bird"` | default neighbour name
+| bird_password | `"password"` | default password
 
 ## Playbooks
 
-Example for using Bird 1.6.x
+Example for using Bird
 
     - hosts: servers
       roles:
          - role: ansible-role-bgp
-           bird_cidr: 172.20.48.0/20
-           enable_firewalld: true         
-           bird_protocols_bgp: |
-             description "{{ ansible_default_ipv4['address'] }}";
-             local as {{ bird_local_as }};
-             neighbor {{ bird_neighbor_address }} as {{ bird_neighbor_as }};
-             multihop;
-             rr client;
-             graceful restart;
-             import all;
-             export all;
-  
+           enable_firewalld: true
+           bird_ipv4_cidr: "172.17.0.0/16"
+           bird_bgp_rr_enabled: true
+           bird_bgp_rs_enabled: false
+           bird_bgp_static_enabled: false
+           bird_password_enabled: true
+         - role: '~/.ansible/roles/ansible-logrotate'
+           logrotate_scripts:
+             - name: bird-logrotate
+                path: /var/log/bird.log
+                options:
+                  - daily
+                  - weekly
+                  - size 25M
+                  - rotate 7
+                  - missingok
+                  - compress
+                  - delaycompress
+                  - copytruncate
+      vars:
+        rr_ipv4:
+          172.17.0.0:
+            bird_friendly_name: "bird_rr_ipv4" # Ensure the friendly name uses lowercase and underscores to create long names #
+            bird_local_as_ipv4: 65000 # Used to override the template import
+            bird_neighbor_ipaddress_ipv4: 172.17.0.3 # Only internal neighbor can be RR client #
+            bird_neighbor_as_ipv4: 65000 # ASN needs to be the same ASN as the peer to act as a RR client #
+        rr_ipv6:
+          2001:db8:1::242:ac11:2:
+            bird_friendly_name: "bird_rr_ipv6" # Ensure the friendly name uses lowercase and underscores to create long names #
+            bird_local_as_ipv6: 65000 # Used to override the template import
+            bird_neighbor_ipaddress_ipv6: "2001:db8:1::242:ac11:3" # Only internal neighbor can be RR client #
+            bird_neighbor_as_ipv6: 65000 # ASN needs to be the same ASN as the peer to act as a RR client #
