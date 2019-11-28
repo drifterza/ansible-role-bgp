@@ -74,7 +74,7 @@ molecule converge
 | bird_ipv6_cidr | `fdd1:ac8c:0557:7ce1::/64` | default ipv6 cidr |
 | bird_neighbor_ipaddress | `"127.0.0.1"` | default neighbour address |
 | bird_friendly_name | `"bird"` | default neighbour name |
-| bird_password | `"password"` | default password |
+| bird_password | `"secret"` | default password |
 
 ## Playbooks
 
@@ -84,7 +84,6 @@ Example for using Bird
       roles:
          - role: ansible-role-bgp
            enable_firewalld: true
-           bird_ipv4_cidr: "172.17.0.0/16"
            bird_bgp_rr_enabled: true
            bird_bgp_rs_enabled: false
            bird_bgp_static_enabled: false
@@ -120,7 +119,6 @@ Example for using Bird
       roles:
          - role: ansible-role-bgp
            enable_firewalld: true
-           bird_ipv4_cidr: "172.17.0.0/16"
            bird_bgp_rr_enabled: true
            bird_bgp_rs_enabled: false
            bird_bgp_static_enabled: false

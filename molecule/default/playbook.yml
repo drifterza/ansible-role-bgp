@@ -4,10 +4,9 @@
   roles:
     - role: "{{ playbook_dir | dirname | dirname | basename }}"
       enable_firewalld: true
-      bird_ipv4_cidr: "172.17.0.0/16"
       bird_bgp_rr_enabled: true
       bird_bgp_rs_enabled: false
-      bird_bgp_static_enabled: false
+      bird_bgp_static_enabled: true
       bird_password_enabled: true
     - role: '~/.ansible/roles/ansible-logrotate'
       logrotate_scripts:
@@ -24,7 +23,7 @@
             - copytruncate
   vars:
     rr_ipv4:
-      172.17.0.0:
+      172.200.0.0:
         bird_friendly_name: "bird_rr_ipv4" # Ensure the friendly name uses lowercase and underscores to create long names #
         bird_local_as_ipv4: 65000 # Used to override the template import
         bird_neighbor_ipaddress_ipv4: 172.17.0.3 # Only internal neighbor can be RR client #
@@ -53,7 +52,6 @@
   roles:
     - role: "{{ playbook_dir | dirname | dirname | basename }}"
       enable_firewalld: true
-      bird_ipv4_cidr: "172.17.0.0/16"
       bird_bgp_rr_enabled: true
       bird_bgp_rs_enabled: false
       bird_bgp_static_enabled: false
@@ -73,7 +71,7 @@
             - copytruncate
   vars:
     rr_ipv4:
-      172.17.0.0:
+      172.200.0.0:
         bird_friendly_name: "bird_rr_ipv4" # Ensure the friendly name uses lowercase and underscores to create long names #
         bird_local_as_ipv4: 65000 # Used to override the template import
         bird_neighbor_ipaddress_ipv4: 172.17.0.2 # Only internal neighbor can be RR client #

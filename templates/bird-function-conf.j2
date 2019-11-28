@@ -1,10 +1,5 @@
 # {{ ansible_managed }}
 
-function is_self_net() 
-{
-  return net ~ {{ bird_ipv4_cidr }};
-}
-
 function avoid_crappy_prefixes()
 {
   if bgp_path.first != 64496 then accept;
@@ -13,16 +8,20 @@ function avoid_crappy_prefixes()
   reject;
 }
 
+function is_valid_network() 
+{
+  return net ~ [
+    172.200.200.2/32,
+    168.210.2.2/32, 
+    196.14.239.2/32
+  ];
+}
+
 function is_valid_network_v6() 
 {
   return net ~ [
     fd00::/8{44,64} # ULA address space as per RFC 4193
   ];
-}
-
-function is_self_net_v6() 
-{
-  return net ~ {{ bird_ipv6_cidr }};
 }
 
 # This function excludes weird networks
@@ -49,12 +48,4 @@ prefix set martians_v6;
 
     return true;
 
-}
-
-function is_valid_network() 
-{
-  return net ~ [
-    168.210.2.2/32, # dnscache1.is.co.za Anycast
-    196.14.239.2/32 # dnscache2.is.co.za Anycast
-  ];
 }
