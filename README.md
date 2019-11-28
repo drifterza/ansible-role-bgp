@@ -51,7 +51,6 @@ ansible-galaxy install -r requirements.yml
 ### Run Molecule
 
 ```bash
-molecule create
 molecule converge
 ```
 

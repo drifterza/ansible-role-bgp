@@ -49,16 +49,15 @@
     group: bird
 
 - name: Ensure static files exists and is owned correctly
-  copy:
+  template:
     src: "{{ item.src }}"
     dest: "{{ item.dest }}"
     owner: bird
     group: bird
     mode: '0664'
-    backup: yes
   loop:
-    - { src: files/static_ipv4.conf, dest: /etc/bird/static_ipv4.conf }
-    - { src: files/static_ipv6.conf, dest: /etc/bird/static_ipv6.conf }
+    - { src: templates/static_ipv4.conf.j2, dest: /etc/bird/static_ipv4.conf }
+    - { src: templates/static_ipv6.conf.j2, dest: /etc/bird/static_ipv6.conf }
   tags:
     - bird-config
   when: bird_bgp_static_enabled == true
