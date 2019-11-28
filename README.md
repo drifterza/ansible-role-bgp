@@ -38,14 +38,15 @@ Configuration is done by editing the configuration file and telling BIRD to reco
 - python-virtualenv >= 15.x
 - python-dev >= 2.7.16
 - molecule == 2.19
+- ansible-logrotate
 
 ```bash
-mkdir Development
-git clone git@gitlab.platform.is:platformengineering/ansible-roles/ansible-role-bgp.git Development/
-cd Development/ansible-role-bgp
+git clone git@gitlab.platform.is:platformengineering/ansible-roles/ansible-role-bgp.git ansible-role-bgp
+cd ansible-role-bgp
 virtualenv molecule-testing
 source molecule-testing/bin/activate
 pip install -r test-requirements.txt
+ansible-galaxy install -r requirements.yml
 ```
 ### Run Molecule
 
