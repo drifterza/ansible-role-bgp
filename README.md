@@ -54,6 +54,12 @@ ansible-galaxy install -r requirements.yml
 molecule converge
 ```
 
+### Destroy Environment
+
+```bash
+molecule destroy
+```
+
 ## Role Variables
 
 | variable | default | description |
