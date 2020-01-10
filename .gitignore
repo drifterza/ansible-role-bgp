@@ -60,4 +60,6 @@ ChangeLog
 releasenotes/build
 
 molecule-testing/
-tests/roles/*
+tests/roles/ansible-logrotate*
+tests/roles/ansible-resolv*
+tests/roles/ansible-role-bgp*
