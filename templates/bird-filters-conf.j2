@@ -41,9 +41,9 @@ filter kernel_export_ipv4
   accept;
 }
 
-filter kernel_export_ipv6 
+{# filter kernel_export_ipv6 
 {
   if source = RTS_STATIC then reject;
   krt_prefsrc = {{ ansible_default_ipv6['address'] }};
   accept;
-}
+} #}

@@ -15,7 +15,7 @@
 # can be bird or epel
 
 enable_security: true
-enable_firewalld: false
+enable_firewalld: true
 bird_package_source: bird
 bird_conf_dir: /etc/bird
 bird_packages: 

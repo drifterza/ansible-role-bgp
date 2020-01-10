@@ -24,6 +24,19 @@
     - bird-config
     - bird-init
 
+- name: Ensure group "bird" exists
+  group:
+    name: bird
+    state: present
+  
+- name: Add the user 'bird' with a specific uid and a primary group of 'bird'
+  user:
+    name: bird
+    comment: bird
+    uid: 1001
+    group: bird
+  
+
 - name: Ensure log file exists and is owned correctly
   file:
     path: "{{ bird_syslog_location }}"

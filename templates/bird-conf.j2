@@ -15,6 +15,7 @@ protocol direct {
 protocol device {
     scan time 10;
 }
+
 {% if bird_bgp_static_enabled == true %}
 protocol static {
     ipv4;
@@ -39,7 +40,7 @@ protocol kernel {
     scan time 20;
     ipv6 {
         import filter default_gw_filter;
-        export filter kernel_export_ipv6;
+        #export filter kernel_export_ipv6;
     };
 }
 

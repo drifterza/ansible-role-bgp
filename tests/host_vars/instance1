@@ -1,0 +1,14 @@
+---
+rr_ipv4:
+  192.168.56.0:
+    bird_friendly_name: "bird_rr_ipv4"
+    bird_local_as_ipv4: 65000
+    bird_neighbor_ipaddress_ipv4: 192.168.56.107
+    bird_neighbor_as_ipv4: 65000
+rr_ipv6:
+  2001:db8:1::242:ac11:2:
+    bird_friendly_name: "bird_rr_ipv6"
+    bird_local_as_ipv6: 65000
+    bird_neighbor_ipaddress_ipv6: "2001:db8:1::242:ac11:2"
+    bird_neighbor_as_ipv6: 65000
+  
