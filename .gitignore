@@ -60,3 +60,4 @@ ChangeLog
 releasenotes/build
 
 molecule-testing/
+tests/roles/*
