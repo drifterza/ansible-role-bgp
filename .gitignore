@@ -63,3 +63,4 @@ molecule-testing/
 tests/roles/ansible-logrotate*
 tests/roles/ansible-resolv*
 tests/roles/ansible-role-bgp*
+.vagrant/

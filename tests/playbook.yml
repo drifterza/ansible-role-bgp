@@ -1,6 +1,7 @@
 ---
 - name: Setup and install Bird
   hosts: bird_bgp
+  become: true
   roles:
     - role: 'ansible-resolv'
       resolv_nameservers:
