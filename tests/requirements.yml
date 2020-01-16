@@ -7,6 +7,6 @@
   scm: git
   version: master
 - name: ansible-role-bgp
-  src: git@gitlab.platform.is:platformengineering/ansible-roles/ansible-role-bgp.git
+  src: https://github.com/drifterza/ansible-role-bgp.git
   scm: git
   version: master
