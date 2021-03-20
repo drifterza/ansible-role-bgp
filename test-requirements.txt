@@ -5,7 +5,7 @@ wheel
 bashate>=0.2 # Apache-2.0
 flake8==3.5.0 # MIT
 pbr==4.1.0
-Jinja2==2.10
+Jinja2==2.11.3
 # this is required for the docs build jobs
 PyYAML==3.13
 sphinx!=1.3b1,<1.3,>=1.2.1 # BSD
